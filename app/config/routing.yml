@@ -1,0 +1,4 @@
+rajkaran_portfolio:
+    resource: "@RajkaranPortfolioBundle/Resources/config/routing.yml"
+    prefix:   /
+

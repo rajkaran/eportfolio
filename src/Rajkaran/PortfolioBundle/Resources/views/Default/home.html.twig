@@ -1,0 +1,249 @@
+{% extends 'RajkaranPortfolioBundle::base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block styleSheet %}
+	<link rel="stylesheet" href="{{ asset('bundles/rajkaranportfolio/css/template.css') }}" />
+	<link rel="stylesheet" href="{{ asset('bundles/rajkaranportfolio/css/main.css') }}" />
+	
+	<!-- Custom Fonts -->
+    <link href="{{ asset('bundles/rajkaranportfolio/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block body %}
+	   <!-- Navigation -->
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">
+                    <img class="center-block" src="{{ asset('bundles/rajkaranportfolio/image/logo.png') }}" alt="Raj Karan" width="100px" />
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav" id="navigation">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#about">
+							<span >
+								<img src="{{ asset('bundles/rajkaranportfolio/image/aboutBlack.png') }}" width="25" />
+							</span>
+							<span>About</span>
+						</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll timeline" href="#careerTimeline" data-timeline="{{path('career_timeline')}}">
+							<span >
+								<img src="{{ asset('bundles/rajkaranportfolio/image/timelineBlack.png') }}" width="25" />
+							</span>
+							<span>Career Timeline</span>
+						</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="http://rajkaran.ca/">
+							<span >
+								<img src="{{ asset('bundles/rajkaranportfolio/image/blogBlack.png') }}" width="25" />
+							</span>
+							<span>Blog</span>
+						</a>
+                    </li>
+					<li>
+                        <a class="page-scroll" href="#connect"  id="connectImag">
+							<span >
+								<img src="{{ asset('bundles/rajkaranportfolio/image/connectBlack.png') }}" width="25" />
+							</span>
+							<span>Connect</span>
+						</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Intro Header -->
+    <header class="intro">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h1 class="brand-heading">{{home[0].screenName}}</h1>
+                        <p class="intro-text">
+							{% autoescape false %}
+								{{home[0].tagLine}}
+							{% endautoescape %}
+						</p>
+                        <a href="#about" class="btn btn-circle page-scroll">
+                            <i class="fa fa-angle-double-down animated"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="container content-section text-center">
+        <div class="row">
+			<h2>About Me</h2>
+            <div class="col-sm-6">
+                {% autoescape false %}
+					{{aboutMe[0].detail}}
+				{% endautoescape %}
+            </div>
+			<div class=" col-xs-12 col-sm-6">
+                <img class="center-block img-responsive" src="{{ asset('bundles/rajkaranportfolio/images/me2.png') }}"  alt="Responsive image" />
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="careerTimeline" class="container content-section text-center">
+        
+		<div class="row">
+			<h2>Career Timeline</h2>
+			
+			<p>/******&nbsp;&nbsp;&nbsp;Drag canvas left or right to view complete timeline&nbsp;&nbsp;&nbsp;******/</p>
+			
+            <div class="col-xs-12 career" id="timeline">  </div>
+			
+			<div class=" col-xs-12">
+                <div class="row text-right">
+					<h3 id="project_name"></h3>
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-2 col-xs-3 text-right">
+						<p>Description:</p>
+					</div>
+					
+					{% autoescape false %}
+						<div class="col-sm-10 col-xs-12 text-left" id="description">
+						</div>
+					{% endautoescape %}					
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-2 col-xs-3 text-right">
+						<p>Features:</p>
+					</div>
+					{% autoescape false %}
+						<div class="col-sm-10 col-xs-12 text-left" id="feature">
+						</div>
+					{% endautoescape %}
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-2 col-xs-3 text-right">
+						<p>Technologies:</p>
+					</div>
+					{% autoescape false %}
+						<div class="col-sm-10 col-xs-12 text-left" id="technology">
+						</div>
+					{% endautoescape %}
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-2 col-xs-2 text-right">
+						<p>When:</p>
+					</div>
+					<div class="col-sm-10 col-xs-12 text-left">
+						{% autoescape false %}
+							<p class="singleLine" id="development_period">
+							</p>
+						{% endautoescape %}
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-2 col-xs-2 text-right">
+						<p>Purpose:</p>
+					</div>
+					<div class="col-sm-10 col-xs-12 text-left">
+						{% autoescape false %}
+							<p class="singleLine" id="development_aim">
+							</p>
+						{% endautoescape %}
+					</div>
+				</div>
+            </div>
+        </div>
+		
+    </section>
+
+    <!-- Contact Section -->
+    <section id="connect" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Connect Here</h2>
+				<p><a href="mailto:rajkaran.chauhan07@gmail.com">rajkaran.chauhan07@gmail.com</a>
+                </p>
+                <ul class="list-inline banner-social-buttons">
+                    <li>
+                        <a href="http://ca.linkedin.com/pub/raj-karan/36/982/b36" class="btn btn-default btn-lg"><i class="fa fa-linkedin fa-fw"></i> <span class="network-name">Linkedin</span></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/rajkaran" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/+RajkaranChauhan/posts" class="btn btn-default btn-lg"><i class="fa fa-google-plus fa-fw"></i> <span class="network-name">Google+</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p>Copyright &copy; www.rajkaran.ca 2015</p>
+        </div>
+    </footer>
+	
+	<div class="modal fade" id="myModal" data-backdrop="static" >
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Browser Compatibility Error</h4>
+				</div>
+				
+				<div class="modal-body">
+					<div class="alert alert-info" role="alert">Few components of this websites are not compatible with your browser. Please upgrade your browser:</div>
+					<label>Desktop...</label>
+					<ul>
+						<li>Firefox 3+</li>
+						<li>Chrome 4+</li>
+						<li>Safari 3.2+</li>
+						<li>Opera 9+</li>
+						<li>IE9 +</li>
+					</ul>
+					<label>Mobile...</label>
+					<ul>
+						<li>iOS Safari 3.2+</li>
+						<li>Android Browser 3+</li>
+						<li>Opera Mobile 10+</li>
+						<li>Chrome for Android 18+</li>
+						<li>Firefox for Android 15+</li>
+					</ul>
+					<div class="alert alert-warning" role="alert">Note: There's no way to close the dialog box.</div>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+
+{% endblock %}
+
+{% block javascript %}
+	<script data-main="{{ asset('bundles/rajkaranportfolio/js/config') }}" src="{{ asset('bundles/rajkaranportfolio/js/lib/require.js') }}"></script>
+{% endblock %}

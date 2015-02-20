@@ -1,0 +1,44 @@
+login:
+    path:     /login
+    defaults: { _controller: RajkaranPortfolioBundle:Security:login }
+
+login_check:
+    pattern:   /login_check
+
+account_register:
+    path:     /register
+    defaults: { _controller: RajkaranPortfolioBundle:Account:register }
+
+account_create:
+    path:     /register/create
+    defaults: { _controller: RajkaranPortfolioBundle:Account:create }
+
+logout:
+    path:   /logout
+
+admin_home:
+    pattern: /admin/home
+    defaults: {_controller: RajkaranPortfolioBundle:BackEnd:home }
+
+admin_career_timeline:
+    pattern: /admin/careerTimeline
+    defaults: {_controller: RajkaranPortfolioBundle:BackEnd:careerTimeline }
+
+project:
+    path:      /admin/careerTimeline/{project}
+    defaults:  { _controller: RajkaranPortfolioBundle:BackEnd:project }
+
+admin_about_me:
+    pattern: /admin/aboutMe
+    defaults: {_controller: RajkaranPortfolioBundle:BackEnd:aboutMe }
+
+home:
+    pattern: /
+    defaults: {_controller: RajkaranPortfolioBundle:FrontEnd:home }
+
+career_timeline:
+    pattern: /timeline
+    defaults: {_controller: RajkaranPortfolioBundle:FrontEnd:careerTimeline }
+    options:
+        expose: true
+

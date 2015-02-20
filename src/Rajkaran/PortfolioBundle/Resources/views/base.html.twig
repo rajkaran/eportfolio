@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+    <head>
+        <!-- Basic Page Needs -->
+        <meta charset="utf-8">
+        <title>Rajkaran - {% block title %}{% endblock %}</title>
+        <meta name="description" content="This is my electronic portfolio to show case the work I have done since year 2011">
+        <meta name="author" content="Rajkaran">
+        
+        <!-- Mobile Specific Metas -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="{{ asset('bundles/rajkaranportfolio/css/bootstrap.min.css') }}" />
+		{% block styleSheet %}{% endblock %}
+        
+        <!-- Favicons
+        ================================================== -->
+        <link rel="shortcut icon" href="{{ asset('bundles/rajkaranportfolio/image/favicon.ico') }}">
+        <link rel="apple-touch-icon" href="{{ asset('bundles/rajkaranportfolio/image/apple-touch-icon.png') }}">
+        <link rel="apple-touch-icon" sizes="72x72" href="{{ asset('bundles/rajkaranportfolio/image/apple-touch-icon-72x72.png') }}">
+        <link rel="apple-touch-icon" sizes="114x114" href="{{ asset('bundles/rajkaranportfolio/image/apple-touch-icon-114x114.png') }}">
+    </head>
+    
+    <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+        {% block body %}{% endblock %}
+		
+		{% block javascript %}{% endblock %}
+		
+		
+    </body>
+</html>

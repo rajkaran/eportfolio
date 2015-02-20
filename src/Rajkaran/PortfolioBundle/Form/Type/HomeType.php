@@ -1,0 +1,43 @@
+<?php
+/*
+*/
+
+namespace Rajkaran\PortfolioBundle\Form\Type;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+
+class HomeType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+		
+		$builder->setMethod('PUT');
+		
+		$builder->add('screenName', 'text');
+		
+		$builder->add('imageName', 'text');
+		
+        $builder->add('tagLine', 'ckeditor');
+		
+		$builder->add('save', 'submit', array('label' => 'Submit'));
+		
+    }
+
+    /*public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Rajkaran\PortfolioBundle\Entity\Home'
+        ));
+    }*/
+
+    public function getName()
+    {
+        return 'home';
+    }
+	
+	
+	
+	
+}

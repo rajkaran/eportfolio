@@ -1,0 +1,69 @@
+Rajkaran\PortfolioBundle\Entity\Home:
+    properties:
+        screenName:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+        imageName:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+        tagLine:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+Rajkaran\PortfolioBundle\Entity\AboutMe:
+    properties:
+        detail:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+Rajkaran\PortfolioBundle\Entity\CareerTimeline:
+    properties:
+        projectName:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+        alias:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+        developedWhen:
+            - NotBlank: ~
+            - Type: \DateTime
+
+        description:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+        feature:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+        technology:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+        developmentPeriod:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+        developmentAim:
+            - NotBlank: ~
+            - Length:
+                min: 3
+
+        developFor:
+            - NotBlank: ~
+            - Length:
+                min: 3

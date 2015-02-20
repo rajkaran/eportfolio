@@ -1,0 +1,64 @@
+{% extends 'RajkaranPortfolioBundle::base.html.twig' %}
+
+{% block styleSheet %}
+	<link rel="stylesheet" href="{{ asset('bundles/rajkaranportfolio/css/sidebar.css') }}" />
+	{% block styleSheetPageSpecific %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+	<div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        <img class="center-block" src="{{ asset('bundles/rajkaranportfolio/image/Rajkaran.png') }}" alt="Raj Karan" width="100px" />
+                    </a>
+                </li>
+				
+                <li><a href="{{ path('admin_home') }}">Home</a></li>
+				
+                <li><a href="{{ path('admin_about_me') }}">About Me</a></li>
+				
+                <li>
+					<a href="{{ path('admin_career_timeline') }}">Career Timeline</a>
+					
+					<ul>
+						{% for project in projects %}
+							<li><a href="{{path('project', {'project': project.projectName})}}">{{ project.alias }}</a></li>
+						{% endfor %}
+					</ul>
+                </li>
+				
+                <li><a href="#">Contact Me</a></li>
+				
+                <li><a href="{{ path('logout') }}">Log Out</a></li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+					<a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+						<i class="glyphicon glyphicon-align-justify"></i>
+					</a>
+                    <div class="col-lg-12">
+						{% block pageContent %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+{% endblock %}
+
+{% block javascript %}
+	<script data-main="{{ asset('bundles/rajkaranportfolio/js/configAdmin') }}" src="{{ asset('bundles/rajkaranportfolio/js/lib/require.js') }}"></script>
+{% endblock %}
+
