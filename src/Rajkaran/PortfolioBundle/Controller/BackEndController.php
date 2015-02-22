@@ -15,6 +15,9 @@ class BackEndController extends Controller {
     
 	public function aboutMeAction(Request $request) {
 		
+		//$hash = password_hash('n01d@Indi@', PASSWORD_BCRYPT, array("cost" => 12));
+		//echo $hash;
+		
 		$projects = $this->getDoctrine()
 			->getRepository('RajkaranPortfolioBundle:CareerTimeline')
 			->findAllProjects();
