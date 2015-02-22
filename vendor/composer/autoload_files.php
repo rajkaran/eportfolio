@@ -9,5 +9,6 @@ return array(
     $vendorDir . '/kriswallsmith/assetic/src/functions.php',
     $vendorDir . '/swiftmailer/swiftmailer/lib/swift_required.php',
     $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
+    $vendorDir . '/ircmaxell/password-compat/lib/password.php',
     $vendorDir . '/symfony/symfony/src/Symfony/Component/Intl/Resources/stubs/functions.php',
 );
