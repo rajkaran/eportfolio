@@ -1,4 +1,4 @@
-define(["jquery", "bootstrap"],function ($, boostrap) {
+define(["jquery", "bootstrap", "svg"],function ($, boostrap, svg) {
     
 	var SELF;
 	
@@ -56,6 +56,12 @@ define(["jquery", "bootstrap"],function ($, boostrap) {
 			
 			return result;
 			
+		},
+		
+		isSVGSupported : function(){
+			
+			if (SVG.supported)	return true;
+			else return false;
 		},
 		
 		showModel : function(){

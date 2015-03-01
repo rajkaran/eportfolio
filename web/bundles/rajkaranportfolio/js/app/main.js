@@ -3,7 +3,7 @@ define(["jquery", "bootstrap", "app/timeline", "app/browserCheck"], function ($,
     $(document).ready(function(){
 	
 		//Show error message if browser does not suppport svg
-		if(browser.isValid() == false) browser.showModel();
+		if(browser.isSVGSupported() == false) browser.showModel();
 				
 		// jQuery to collapse the navbar on scroll
 		$(window).scroll(function() {
