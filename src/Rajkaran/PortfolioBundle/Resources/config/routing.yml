@@ -16,6 +16,13 @@ account_create:
 logout:
     path:   /logout
 
+admin:
+    pattern: /admin
+    defaults: 
+        _controller: FrameworkBundle:Redirect:urlRedirect
+        path: /admin/home
+        permanent: true
+
 admin_home:
     pattern: /admin/home
     defaults: {_controller: RajkaranPortfolioBundle:BackEnd:home }
