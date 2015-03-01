@@ -5,7 +5,7 @@ namespace Rajkaran\PortfolioBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="careerTimeline")
+ * @ORM\Table(name="careertimeline")
  * @ORM\Entity(repositoryClass="Rajkaran\PortfolioBundle\Repository\CareerTimelineRepository")
  */
 class CareerTimeline {
