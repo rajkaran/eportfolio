@@ -164,8 +164,8 @@ define(["jquery", "draggable", "svg"],function ($, draggable, svg) {
 				circleArray[key].attr('id', key);
 				circleArray[key].data('dropColorFrom', colorCombo[1]);
 				
-				imageArray[key] = draw.image('./../bundles/rajkaranportfolio/image/'+PROJECTS[key]['develop_for']+'.png', 80, 50).center(PROJECTS[key]['position_on_x-axis'], PROJECTS[key]['position_on_y-axis']-40)
-				//imageArray[key] = draw.image('../web/bundles/rajkaranportfolio/image/'+PROJECTS[key]['develop_for']+'.png', 80, 50).center(PROJECTS[key]['position_on_x-axis'], PROJECTS[key]['position_on_y-axis']-40)
+				//imageArray[key] = draw.image('./../bundles/rajkaranportfolio/image/'+PROJECTS[key]['develop_for']+'.png', 80, 50).center(PROJECTS[key]['position_on_x-axis'], PROJECTS[key]['position_on_y-axis']-40)
+				imageArray[key] = draw.image('../web/bundles/rajkaranportfolio/image/'+PROJECTS[key]['develop_for']+'.png', 80, 50).center(PROJECTS[key]['position_on_x-axis'], PROJECTS[key]['position_on_y-axis']-40)
 				
 				projectNameArray[key] = SELF.createProjectName(PROJECTS[key], draw);
 				
