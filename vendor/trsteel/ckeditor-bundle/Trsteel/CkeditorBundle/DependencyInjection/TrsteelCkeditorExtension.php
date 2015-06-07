@@ -92,7 +92,7 @@ class TrsteelCkeditorExtension extends Extension
             ),
             'basicstyles' => array(
                 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-',
-                'RemoveFormat',
+                'RemoveFormat', 'Blockquote',
             ),
             'paragraph'   => array(
                 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft',

@@ -61,15 +61,15 @@ define(["jquery", "draggable", "svg"],function ($, draggable, svg) {
 			
 			Object.keys(PROJECTS).forEach(function (key) {
 				
-				var thisDate = PROJECTS[key]['developed_when'];
+				var thisDate = SELF.parseDate( PROJECTS[key]['developed_when'] );
 				
 				PROJECTS[key]['position_on_y-axis'] = SELF.getRandomInt(Y_AXIS_RANGE_FROM, Y_AXIS_RANGE_TO);
 				
 				if(counter == 0){
-					PROJECTS[key]['position_on_x-axis'] = TIMELINE_PADDING_LEFT + (DIAMETER/2);
+					PROJECTS[key]['position_on_x-axis'] = parseInt(TIMELINE_PADDING_LEFT + (DIAMETER/2));
 				}
 				else{
-					PROJECTS[key]['position_on_x-axis'] = pointerOnXaxis+(DIAMETER/2)+(SELF.dateDiffInDays(previousDate, thisDate)*DAY_EQUALS_TO_PIXEL)+(DIAMETER/2);
+					PROJECTS[key]['position_on_x-axis'] = parseInt( pointerOnXaxis+(DIAMETER/2)+(SELF.dateDiffInDays(previousDate, thisDate)*DAY_EQUALS_TO_PIXEL)+(DIAMETER/2) );
 				}
 				
 				counter++;
@@ -77,7 +77,9 @@ define(["jquery", "draggable", "svg"],function ($, draggable, svg) {
 				pointerOnXaxis = PROJECTS[key]['position_on_x-axis'];
 				
 				var yearForThis = new Date(thisDate).getFullYear();
-				X_AXIS_LAST_POINT = SELF.dateDiffInDays(thisDate, yearForThis+'-01-01')+pointerOnXaxis+(DIAMETER/2);
+				var firstDateOfYear = SELF.parseDate( yearForThis+'-01-01');
+				
+				X_AXIS_LAST_POINT = SELF.dateDiffInDays(thisDate, firstDateOfYear)+pointerOnXaxis+(DIAMETER/2);
 				YEAR_BAR[yearForThis] = {date:thisDate, 'position_on_x-axis':X_AXIS_LAST_POINT, text:yearForThis};
 				
 			});
@@ -95,22 +97,30 @@ define(["jquery", "draggable", "svg"],function ($, draggable, svg) {
 			return Math.floor(Math.random() * (max - min + 1)) + min;
 		},
 		
-		
+		/* This function breaks the input date string into different components and then creates a date using
+		 * JS Date object. This function is required to fix the issue with safari, as it does not parse 2014-07-15T00:00:00-0400
+		 * and throws invalid date error.
+		 */
+		parseDate : function(str) {
+			var a = $.map(str.split(/[^0-9]/), function(s) { return parseInt(s, 10) });
+			return new Date(a[0], a[1]-1 || 0, a[2] || 1, a[3] || 0, a[4] || 0, a[5] || 0, a[6] || 0);
+		},
 
 		// get the difference between two dates while ignoring time part and timezone
-		dateDiffInDays : function(a, b) {
-		  var a = new Date(a); 
-		  var b = new Date(b);
-			
-		  var utc1 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-		  var utc2 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+		dateDiffInDays : function(x, y) {
 
-		  return Math.floor((utc2 - utc1) / MILLISECONDS_PER_DAY);
+			var a = new Date(x); 
+			var b = new Date(y);
+			var utc1 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+			var utc2 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+
+			return Math.floor((utc2 - utc1) / MILLISECONDS_PER_DAY);
 		},
 		
 		
 		
 		createBubbles:function(){
+		
 			var draw = SVG(SVG_CANVAS_ID).size('100%', '100%');
 			
 			var allElements = draw.group();
@@ -124,10 +134,12 @@ define(["jquery", "draggable", "svg"],function ($, draggable, svg) {
 			var preX = PROJECTS[0]['position_on_x-axis'];
 			var preY = PROJECTS[0]['position_on_y-axis'];
 			
+			
+			
 			var rect = draw.rect(X_AXIS_LAST_POINT+PADDING_FOR_LAST_POINT+(DIAMETER/2), SVG_CANVAS_HEIGHT);
 			rect.fill('#4c4c4c');
 			
-			var s3, s4			
+			var s1, s2, s3, s4			
 			var gradientPath = draw.gradient('linear', function(stop) {
 				s3 = stop.at(0, '#E18942')
 				s4 = stop.at(1, '#fff')
@@ -136,9 +148,7 @@ define(["jquery", "draggable", "svg"],function ($, draggable, svg) {
 			
 			allElements.add(rect);			
 			
-			Object.keys(PROJECTS).forEach(function (key) {
-				
-				
+			Object.keys(PROJECTS).forEach(function (key) {				
 				
 				var colorCombo = COLOUR_COMBOS[ SELF.getRandomInt(0, COLOUR_COMBOS.length-1) ];
 				
@@ -146,6 +156,7 @@ define(["jquery", "draggable", "svg"],function ($, draggable, svg) {
 					s1 = stop.at(0, "#"+colorCombo[0])
 					s2 = stop.at(.7, "#"+colorCombo[1])
 				})
+				
 				gradient.from(0, 0).to(0, 1)
 				
 				circleArray[key] =  draw.circle( DIAMETER, DIAMETER ).center(PROJECTS[key]['position_on_x-axis'], PROJECTS[key]['position_on_y-axis']).fill(gradient).style({ cursor: 'pointer' });
@@ -153,8 +164,8 @@ define(["jquery", "draggable", "svg"],function ($, draggable, svg) {
 				circleArray[key].attr('id', key);
 				circleArray[key].data('dropColorFrom', colorCombo[1]);
 				
-				imageArray[key] = draw.image('./../bundles/rajkaranportfolio/image/'+PROJECTS[key]['develop_for']+'.png', 80, 50).center(PROJECTS[key]['position_on_x-axis'], PROJECTS[key]['position_on_y-axis']-40)
-				//imageArray[key] = draw.image('../web/bundles/rajkaranportfolio/image/'+PROJECTS[key]['develop_for']+'.png', 80, 50).center(PROJECTS[key]['position_on_x-axis'], PROJECTS[key]['position_on_y-axis']-40)
+				//imageArray[key] = draw.image('./../bundles/rajkaranportfolio/image/'+PROJECTS[key]['develop_for']+'.png', 80, 50).center(PROJECTS[key]['position_on_x-axis'], PROJECTS[key]['position_on_y-axis']-40)
+				imageArray[key] = draw.image('../web/bundles/rajkaranportfolio/image/'+PROJECTS[key]['develop_for']+'.png', 80, 50).center(PROJECTS[key]['position_on_x-axis'], PROJECTS[key]['position_on_y-axis']-40)
 				
 				projectNameArray[key] = SELF.createProjectName(PROJECTS[key], draw);
 				
@@ -195,13 +206,26 @@ define(["jquery", "draggable", "svg"],function ($, draggable, svg) {
 			var path = draw.path('M5 10 Q10 20 40 30 ').fill(gradientPath);
 			allElements.add(path);
 			
-			var colorFrom = SVG.get(0).data('dropColorFrom');
-					
+			var colorFrom = SVG.get(0).data('dropColorFrom');					
 			s3.update(0, "#"+colorFrom);
+			
 			SELF.updateDrop(0, path);
 			SELF.updateProjectDescription(0);
 			
 			allElements.click(function(event) {
+				if(event.target.nodeName == "ellipse"){
+					var key = $(event.target).attr('id');
+					var colorFrom = SVG.get(key).data('dropColorFrom');
+					
+					s3.update(0, "#"+colorFrom);
+					s4.update(0.7, "#fff");
+					
+					SELF.updateDrop( key, path);
+					SELF.updateProjectDescription(key);
+				}
+			})
+			
+			allElements.touchstart(function(event) {
 				if(event.target.nodeName == "ellipse"){
 					var key = $(event.target).attr('id');
 					var colorFrom = SVG.get(key).data('dropColorFrom');
