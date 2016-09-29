@@ -14,7 +14,7 @@ namespace Symfony\Component\Validator\Tests\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\CallbackValidator;
-use Symfony\Component\Validator\ExecutionContextInterface;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class CallbackValidatorTest_Class
 {
@@ -35,7 +35,7 @@ class CallbackValidatorTest_Object
         return false;
     }
 
-    public static function validateStatic(ExecutionContextInterface $context)
+    public static function validateStatic($object, ExecutionContextInterface $context)
     {
         $context->addViolation('Static message', array('{{ value }}' => 'baz'));
 
@@ -52,7 +52,7 @@ class CallbackValidatorTest extends AbstractConstraintValidatorTest
 
     public function testNullIsValid()
     {
-        $this->validator->validate(null, new Callback(array('foo')));
+        $this->validator->validate(null, new Callback());
 
         $this->assertNoViolation();
     }
@@ -60,7 +60,7 @@ class CallbackValidatorTest extends AbstractConstraintValidatorTest
     public function testSingleMethod()
     {
         $object = new CallbackValidatorTest_Object();
-        $constraint = new Callback(array('validate'));
+        $constraint = new Callback('validate');
 
         $this->validator->validate($object, $constraint);
 
@@ -72,51 +72,80 @@ class CallbackValidatorTest extends AbstractConstraintValidatorTest
     public function testSingleMethodExplicitName()
     {
         $object = new CallbackValidatorTest_Object();
-        $constraint = new Callback(array('methods' => array('validate')));
+        $constraint = new Callback(array('callback' => 'validate'));
 
         $this->validator->validate($object, $constraint);
 
         $this->buildViolation('My message')
             ->setParameter('{{ value }}', 'foobar')
-            ->assertRaised();
-    }
-
-    public function testMultipleMethods()
-    {
-        $object = new CallbackValidatorTest_Object();
-        $constraint = new Callback(array('validate', 'validateStatic'));
-
-        $this->validator->validate($object, $constraint);
-
-        $this->buildViolation('My message')
-            ->setParameter('{{ value }}', 'foobar')
-            ->buildNextViolation('Static message')
-            ->setParameter('{{ value }}', 'baz')
-            ->assertRaised();
-    }
-
-    public function testMultipleMethodsExplicitName()
-    {
-        $object = new CallbackValidatorTest_Object();
-        $constraint = new Callback(array(
-            'methods' => array('validate', 'validateStatic'),
-        ));
-
-        $this->validator->validate($object, $constraint);
-
-        $this->buildViolation('My message')
-            ->setParameter('{{ value }}', 'foobar')
-            ->buildNextViolation('Static message')
-            ->setParameter('{{ value }}', 'baz')
             ->assertRaised();
     }
 
     public function testSingleStaticMethod()
     {
         $object = new CallbackValidatorTest_Object();
+        $constraint = new Callback('validateStatic');
+
+        $this->validator->validate($object, $constraint);
+
+        $this->buildViolation('Static message')
+            ->setParameter('{{ value }}', 'baz')
+            ->assertRaised();
+    }
+
+    public function testClosure()
+    {
+        $object = new CallbackValidatorTest_Object();
+        $constraint = new Callback(function ($object, ExecutionContextInterface $context) {
+            $context->addViolation('My message', array('{{ value }}' => 'foobar'));
+
+            return false;
+        });
+
+        $this->validator->validate($object, $constraint);
+
+        $this->buildViolation('My message')
+            ->setParameter('{{ value }}', 'foobar')
+            ->assertRaised();
+    }
+
+    public function testClosureNullObject()
+    {
+        $constraint = new Callback(function ($object, ExecutionContextInterface $context) {
+            $context->addViolation('My message', array('{{ value }}' => 'foobar'));
+
+            return false;
+        });
+
+        $this->validator->validate(null, $constraint);
+
+        $this->buildViolation('My message')
+            ->setParameter('{{ value }}', 'foobar')
+            ->assertRaised();
+    }
+
+    public function testClosureExplicitName()
+    {
+        $object = new CallbackValidatorTest_Object();
         $constraint = new Callback(array(
-            array(__CLASS__.'_Class', 'validateCallback'),
+            'callback' => function ($object, ExecutionContextInterface $context) {
+                $context->addViolation('My message', array('{{ value }}' => 'foobar'));
+
+                return false;
+            },
         ));
+
+        $this->validator->validate($object, $constraint);
+
+        $this->buildViolation('My message')
+            ->setParameter('{{ value }}', 'foobar')
+            ->assertRaised();
+    }
+
+    public function testArrayCallable()
+    {
+        $object = new CallbackValidatorTest_Object();
+        $constraint = new Callback(array(__CLASS__.'_Class', 'validateCallback'));
 
         $this->validator->validate($object, $constraint);
 
@@ -125,11 +154,22 @@ class CallbackValidatorTest extends AbstractConstraintValidatorTest
             ->assertRaised();
     }
 
-    public function testSingleStaticMethodExplicitName()
+    public function testArrayCallableNullObject()
+    {
+        $constraint = new Callback(array(__CLASS__.'_Class', 'validateCallback'));
+
+        $this->validator->validate(null, $constraint);
+
+        $this->buildViolation('Callback message')
+            ->setParameter('{{ value }}', 'foobar')
+            ->assertRaised();
+    }
+
+    public function testArrayCallableExplicitName()
     {
         $object = new CallbackValidatorTest_Object();
         $constraint = new Callback(array(
-            'methods' => array(array(__CLASS__.'_Class', 'validateCallback')),
+            'callback' => array(__CLASS__.'_Class', 'validateCallback'),
         ));
 
         $this->validator->validate($object, $constraint);
@@ -146,7 +186,7 @@ class CallbackValidatorTest extends AbstractConstraintValidatorTest
     {
         $object = new CallbackValidatorTest_Object();
 
-        $this->validator->validate($object, new Callback(array('foobar')));
+        $this->validator->validate($object, new Callback(array('callback' => array('foobar'))));
     }
 
     /**
@@ -156,19 +196,18 @@ class CallbackValidatorTest extends AbstractConstraintValidatorTest
     {
         $object = new CallbackValidatorTest_Object();
 
-        $this->validator->validate($object, new Callback(array(array('foo', 'bar'))));
+        $this->validator->validate($object, new Callback(array('callback' => array('foo', 'bar'))));
     }
 
     public function testConstraintGetTargets()
     {
-        $constraint = new Callback(array('foo'));
+        $constraint = new Callback(array());
+        $targets = array(Constraint::CLASS_CONSTRAINT, Constraint::PROPERTY_CONSTRAINT);
 
-        $this->assertEquals(Constraint::CLASS_CONSTRAINT, $constraint->getTargets());
+        $this->assertEquals($targets, $constraint->getTargets());
     }
 
-    /**
-     * @expectedException \Symfony\Component\Validator\Exception\MissingOptionsException
-     */
+    // Should succeed. Needed when defining constraints as annotations.
     public function testNoConstructorArguments()
     {
         new Callback();
@@ -186,5 +225,29 @@ class CallbackValidatorTest extends AbstractConstraintValidatorTest
         $constraint = new Callback(array('value' => array(__CLASS__.'_Class', 'validateCallback')));
 
         $this->assertEquals(new Callback(array(__CLASS__.'_Class', 'validateCallback')), $constraint);
+    }
+
+    public function testPayloadIsPassedToCallback()
+    {
+        $object = new \stdClass();
+        $payloadCopy = null;
+
+        $constraint = new Callback(array(
+            'callback' => function ($object, ExecutionContextInterface $constraint, $payload) use (&$payloadCopy) {
+                $payloadCopy = $payload;
+            },
+            'payload' => 'Hello world!',
+        ));
+        $this->validator->validate($object, $constraint);
+        $this->assertEquals('Hello world!', $payloadCopy);
+
+        $payloadCopy = null;
+        $constraint = new Callback(array(
+            'callback' => function ($object, ExecutionContextInterface $constraint, $payload) use (&$payloadCopy) {
+                $payloadCopy = $payload;
+            },
+        ));
+        $this->validator->validate($object, $constraint);
+        $this->assertNull($payloadCopy);
     }
 }

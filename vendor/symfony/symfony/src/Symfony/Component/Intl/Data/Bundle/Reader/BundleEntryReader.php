@@ -34,7 +34,7 @@ class BundleEntryReader implements BundleEntryReaderInterface
     private $reader;
 
     /**
-     * A mapping of locale aliases to locales
+     * A mapping of locale aliases to locales.
      *
      * @var array
      */
@@ -43,7 +43,7 @@ class BundleEntryReader implements BundleEntryReaderInterface
     /**
      * Creates an entry reader based on the given resource bundle reader.
      *
-     * @param BundleReaderInterface $reader A resource bundle reader to use.
+     * @param BundleReaderInterface $reader A resource bundle reader to use
      */
     public function __construct(BundleReaderInterface $reader)
     {

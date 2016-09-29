@@ -41,7 +41,7 @@ class XmlDriver extends AbstractFileDriver
         }
 
         $metadata = new ClassMetadata($name = $class->name);
-        if (!$elems = $elem->xpath("./class[@name = '".$name."']")) {
+        if ( ! $elems = $elem->xpath("./class[@name = '".$name."']")) {
             throw new RuntimeException(sprintf('Could not find class %s inside XML element.', $name));
         }
         $elem = reset($elems);
@@ -86,7 +86,7 @@ class XmlDriver extends AbstractFileDriver
         }
 
         foreach ($elem->xpath('./xml-namespace') as $xmlNamespace) {
-            if (!isset($xmlNamespace->attributes()->uri)) {
+            if ( ! isset($xmlNamespace->attributes()->uri)) {
                 throw new RuntimeException('The prefix attribute must be set for all xml-namespace elements.');
             }
 
@@ -100,27 +100,27 @@ class XmlDriver extends AbstractFileDriver
         }
 
         foreach ($elem->xpath('./virtual-property') as $method) {
-            if (!isset($method->attributes()->method)) {
+            if ( ! isset($method->attributes()->method)) {
                 throw new RuntimeException('The method attribute must be set for all virtual-property elements.');
             }
 
-            $virtualPropertyMetadata = new VirtualPropertyMetadata( $name, (string) $method->attributes()->method );
+            $virtualPropertyMetadata = new VirtualPropertyMetadata($name, (string) $method->attributes()->method);
 
             $propertiesMetadata[] = $virtualPropertyMetadata;
             $propertiesNodes[] = $method;
         }
 
-        if (!$excludeAll) {
+        if ( ! $excludeAll) {
 
             foreach ($class->getProperties() as $property) {
-                if ($name !== $property->class) {
+                if ($property->class !== $name || (isset($property->info) && $property->info['class'] !== $name)) {
                     continue;
                 }
 
                 $propertiesMetadata[] = new PropertyMetadata($name, $pName = $property->getName());
                 $pElems = $elem->xpath("./property[@name = '".$pName."']");
 
-                $propertiesNodes[] = $pElems ? reset( $pElems ) : null;
+                $propertiesNodes[] = $pElems ? reset($pElems) : null;
             }
 
             foreach ($propertiesMetadata as $propertyKey => $pMetadata) {
@@ -129,7 +129,7 @@ class XmlDriver extends AbstractFileDriver
                 $isExpose = $pMetadata instanceof VirtualPropertyMetadata;
 
                 $pElem = $propertiesNodes[$propertyKey];
-                if (!empty( $pElem )) {
+                if ( ! empty($pElem)) {
 
                     if (null !== $exclude = $pElem->attributes()->exclude) {
                         $isExclude = 'true' === strtolower($exclude);
@@ -158,10 +158,11 @@ class XmlDriver extends AbstractFileDriver
                     }
 
                     if (null !== $groups = $pElem->attributes()->groups) {
-                        $pMetadata->groups =  preg_split('/\s*,\s*/', (string) $groups);
+                        $pMetadata->groups = preg_split('/\s*,\s*/', (string) $groups);
                     }
 
                     if (isset($pElem->{'xml-list'})) {
+
                         $pMetadata->xmlCollection = true;
 
                         $colConfig = $pElem->{'xml-list'};
@@ -171,6 +172,16 @@ class XmlDriver extends AbstractFileDriver
 
                         if (isset($colConfig->attributes()->{'entry-name'})) {
                             $pMetadata->xmlEntryName = (string) $colConfig->attributes()->{'entry-name'};
+                        }
+                        
+                        if (isset($colConfig->attributes()->{'skip-when-empty'})) {
+                            $pMetadata->xmlCollectionSkipWhenEmpty = 'true' === (string) $colConfig->attributes()->{'skip-when-empty'};
+                        } else {
+                            $pMetadata->xmlCollectionSkipWhenEmpty = true;
+                        }
+
+                        if (isset($colConfig->attributes()->namespace)) {
+                            $pMetadata->xmlEntryNamespace = (string) $colConfig->attributes()->namespace;
                         }
                     }
 
@@ -184,6 +195,10 @@ class XmlDriver extends AbstractFileDriver
 
                         if (isset($colConfig->attributes()->{'entry-name'})) {
                             $pMetadata->xmlEntryName = (string) $colConfig->attributes()->{'entry-name'};
+                        }
+
+                        if (isset($colConfig->attributes()->namespace)) {
+                            $pMetadata->xmlEntryNamespace = (string) $colConfig->attributes()->namespace;
                         }
 
                         if (isset($colConfig->attributes()->{'key-attribute-name'})) {
@@ -207,7 +222,7 @@ class XmlDriver extends AbstractFileDriver
                     }
 
                     if (isset($pElem->attributes()->{'xml-attribute-map'})) {
-                        $pMetadata->xmlAttribute = 'true' === (string) $pElem->attributes()->{'xml-attribute-map'};
+                        $pMetadata->xmlAttributeMap = 'true' === (string) $pElem->attributes()->{'xml-attribute-map'};
                     }
 
                     if (isset($pElem->attributes()->{'xml-value'})) {
@@ -243,8 +258,8 @@ class XmlDriver extends AbstractFileDriver
 
                 }
 
-                if ((ExclusionPolicy::NONE === (string)$exclusionPolicy && !$isExclude)
-                    || (ExclusionPolicy::ALL === (string)$exclusionPolicy && $isExpose)) {
+                if ((ExclusionPolicy::NONE === (string) $exclusionPolicy && ! $isExclude)
+                    || (ExclusionPolicy::ALL === (string) $exclusionPolicy && $isExpose)) {
 
                     $metadata->addPropertyMetadata($pMetadata);
                 }
@@ -252,10 +267,10 @@ class XmlDriver extends AbstractFileDriver
         }
 
         foreach ($elem->xpath('./callback-method') as $method) {
-            if (!isset($method->attributes()->type)) {
+            if ( ! isset($method->attributes()->type)) {
                 throw new RuntimeException('The type attribute must be set for all callback-method elements.');
             }
-            if (!isset($method->attributes()->name)) {
+            if ( ! isset($method->attributes()->name)) {
                 throw new RuntimeException('The name attribute must be set for all callback-method elements.');
             }
 

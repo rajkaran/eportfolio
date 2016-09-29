@@ -35,6 +35,7 @@ use JMS\Serializer\Tests\Fixtures\ObjectWithXmlRootNamespace;
 use JMS\Serializer\Tests\Fixtures\Input;
 use JMS\Serializer\Tests\Fixtures\SimpleClassObject;
 use JMS\Serializer\Tests\Fixtures\SimpleSubClassObject;
+use JMS\Serializer\Tests\Fixtures\ObjectWithNamespacesAndList;
 
 class XmlSerializationTest extends BaseSerializationTest
 {
@@ -45,6 +46,22 @@ class XmlSerializationTest extends BaseSerializationTest
     {
         $obj = new InvalidUsageOfXmlValue();
         $this->serialize($obj);
+    }
+
+
+    /**
+     * @dataProvider getXMLBooleans
+     */
+    public function testXMLBooleans($xmlBoolean, $boolean)
+    {
+        if ($this->hasDeserializer()) {
+            $this->assertSame($boolean, $this->deserialize('<result>'.$xmlBoolean.'</result>', 'boolean'));
+        }
+    }
+
+    public function getXMLBooleans()
+    {
+        return array(array('true', true), array('false', false), array('1', true), array('0', false));
     }
 
     public function testPropertyIsObjectWithAttributeAndValue()
@@ -141,6 +158,33 @@ class XmlSerializationTest extends BaseSerializationTest
         $this->assertEquals(
             $this->getContent('virtual_properties_map'),
             $this->serialize(new ObjectWithVirtualXmlProperties(), SerializationContext::create()->setGroups(array('map')))
+        );
+    }
+    public function testObjectWithNamespacesAndList()
+    {
+        $object = new ObjectWithNamespacesAndList();
+        $object->name = 'name';
+        $object->nameAlternativeB = 'nameB';
+
+        $object->phones = array('111', '222');
+        $object->addresses = array('A'=>'Street 1', 'B'=>'Street 2');
+
+        $object->phonesAlternativeB = array('555', '666');
+        $object->addressesAlternativeB = array('A'=>'Street 5', 'B'=>'Street 6');
+
+        $object->phonesAlternativeC = array('777', '888');
+        $object->addressesAlternativeC = array('A'=>'Street 7', 'B'=>'Street 8');
+
+        $object->phonesAlternativeD = array('999', 'AAA');
+        $object->addressesAlternativeD = array('A'=>'Street 9', 'B'=>'Street A');
+
+        $this->assertEquals(
+            $this->getContent('object_with_namespaces_and_list'),
+            $this->serialize($object, SerializationContext::create())
+        );
+        $this->assertEquals(
+            $object,
+            $this->deserialize($this->getContent('object_with_namespaces_and_list'), get_class($object))
         );
     }
 

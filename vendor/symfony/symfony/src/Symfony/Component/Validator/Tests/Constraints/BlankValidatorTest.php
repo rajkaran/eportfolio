@@ -48,6 +48,7 @@ class BlankValidatorTest extends AbstractConstraintValidatorTest
 
         $this->buildViolation('myMessage')
             ->setParameter('{{ value }}', $valueAsString)
+            ->setCode(Blank::NOT_BLANK_ERROR)
             ->assertRaised();
     }
 

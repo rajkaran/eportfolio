@@ -14,6 +14,7 @@ namespace Symfony\Component\Translation\Tests;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\MessageSelector;
 use Symfony\Component\Translation\Loader\ArrayLoader;
+use Symfony\Component\Translation\MessageCatalogue;
 
 class TranslatorTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,7 +46,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function testSetGetLocale()
     {
-        $translator = new Translator('en', new MessageSelector());
+        $translator = new Translator('en');
 
         $this->assertEquals('en', $translator->getLocale());
 
@@ -74,9 +75,43 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($locale, $translator->getLocale());
     }
 
+    public function testGetCatalogue()
+    {
+        $translator = new Translator('en');
+
+        $this->assertEquals(new MessageCatalogue('en'), $translator->getCatalogue());
+
+        $translator->setLocale('fr');
+        $this->assertEquals(new MessageCatalogue('fr'), $translator->getCatalogue('fr'));
+    }
+
+    public function testGetCatalogueReturnsConsolidatedCatalogue()
+    {
+        /*
+         * This will be useful once we refactor so that different domains will be loaded lazily (on-demand).
+         * In that case, getCatalogue() will probably have to load all missing domains in order to return
+         * one complete catalogue.
+         */
+
+        $locale = 'whatever';
+        $translator = new Translator($locale);
+        $translator->addLoader('loader-a', new ArrayLoader());
+        $translator->addLoader('loader-b', new ArrayLoader());
+        $translator->addResource('loader-a', array('foo' => 'foofoo'), $locale, 'domain-a');
+        $translator->addResource('loader-b', array('bar' => 'foobar'), $locale, 'domain-b');
+
+        /*
+         * Test that we get a single catalogue comprising messages
+         * from different loaders and different domains
+         */
+        $catalogue = $translator->getCatalogue($locale);
+        $this->assertTrue($catalogue->defines('foo', 'domain-a'));
+        $this->assertTrue($catalogue->defines('bar', 'domain-b'));
+    }
+
     public function testSetFallbackLocales()
     {
-        $translator = new Translator('en', new MessageSelector());
+        $translator = new Translator('en');
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', array('foo' => 'foofoo'), 'en');
         $translator->addResource('array', array('bar' => 'foobar'), 'fr');
@@ -90,7 +125,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function testSetFallbackLocalesMultiple()
     {
-        $translator = new Translator('en', new MessageSelector());
+        $translator = new Translator('en');
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', array('foo' => 'foo (en)'), 'en');
         $translator->addResource('array', array('bar' => 'bar (fr)'), 'fr');
@@ -124,12 +159,11 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function testTransWithFallbackLocale()
     {
-        $translator = new Translator('fr_FR', new MessageSelector());
-        $translator->addLoader('array', new ArrayLoader());
-        $translator->addResource('array', array('foo' => 'foofoo'), 'en_US');
-        $translator->addResource('array', array('bar' => 'foobar'), 'en');
-
+        $translator = new Translator('fr_FR');
         $translator->setFallbackLocales(array('en'));
+
+        $translator->addLoader('array', new ArrayLoader());
+        $translator->addResource('array', array('bar' => 'foobar'), 'en');
 
         $this->assertEquals('foobar', $translator->trans('bar'));
     }
@@ -156,10 +190,10 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function testAddResourceAfterTrans()
     {
-        $translator = new Translator('fr', new MessageSelector());
+        $translator = new Translator('fr');
         $translator->addLoader('array', new ArrayLoader());
 
-        $translator->setFallbackLocale(array('en'));
+        $translator->setFallbackLocales(array('en'));
 
         $translator->addResource('array', array('foo' => 'foofoo'), 'en');
         $this->assertEquals('foofoo', $translator->trans('foo'));
@@ -175,7 +209,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
     public function testTransWithoutFallbackLocaleFile($format, $loader)
     {
         $loaderClass = 'Symfony\\Component\\Translation\\Loader\\'.$loader;
-        $translator = new Translator('en', new MessageSelector());
+        $translator = new Translator('en');
         $translator->addLoader($format, new $loaderClass());
         $translator->addResource($format, __DIR__.'/fixtures/non-existing', 'en');
         $translator->addResource($format, __DIR__.'/fixtures/resources.'.$format, 'en');
@@ -190,7 +224,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
     public function testTransWithFallbackLocaleFile($format, $loader)
     {
         $loaderClass = 'Symfony\\Component\\Translation\\Loader\\'.$loader;
-        $translator = new Translator('en_GB', new MessageSelector());
+        $translator = new Translator('en_GB');
         $translator->addLoader($format, new $loaderClass());
         $translator->addResource($format, __DIR__.'/fixtures/non-existing', 'en_GB');
         $translator->addResource($format, __DIR__.'/fixtures/resources.'.$format, 'en', 'resources');
@@ -200,7 +234,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function testTransWithFallbackLocaleBis()
     {
-        $translator = new Translator('en_US', new MessageSelector());
+        $translator = new Translator('en_US');
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', array('foo' => 'foofoo'), 'en_US');
         $translator->addResource('array', array('bar' => 'foobar'), 'en');
@@ -209,7 +243,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function testTransWithFallbackLocaleTer()
     {
-        $translator = new Translator('fr_FR', new MessageSelector());
+        $translator = new Translator('fr_FR');
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', array('foo' => 'foo (en_US)'), 'en_US');
         $translator->addResource('array', array('bar' => 'bar (en)'), 'en');
@@ -222,7 +256,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function testTransNonExistentWithFallback()
     {
-        $translator = new Translator('fr', new MessageSelector());
+        $translator = new Translator('fr');
         $translator->setFallbackLocales(array('en'));
         $translator->addLoader('array', new ArrayLoader());
         $this->assertEquals('non-existent', $translator->trans('non-existent'));
@@ -233,10 +267,30 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testWhenAResourceHasNoRegisteredLoader()
     {
-        $translator = new Translator('en', new MessageSelector());
+        $translator = new Translator('en');
         $translator->addResource('array', array('foo' => 'foofoo'), 'en');
 
         $translator->trans('foo');
+    }
+
+    public function testFallbackCatalogueResources()
+    {
+        $translator = new Translator('en_GB', new MessageSelector());
+        $translator->addLoader('yml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
+        $translator->addResource('yml', __DIR__.'/fixtures/empty.yml', 'en_GB');
+        $translator->addResource('yml', __DIR__.'/fixtures/resources.yml', 'en');
+
+        // force catalogue loading
+        $this->assertEquals('bar', $translator->trans('foo', array()));
+
+        $resources = $translator->getCatalogue('en')->getResources();
+        $this->assertCount(1, $resources);
+        $this->assertContains(__DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'resources.yml', $resources);
+
+        $resources = $translator->getCatalogue('en_GB')->getResources();
+        $this->assertCount(2, $resources);
+        $this->assertContains(__DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'empty.yml', $resources);
+        $this->assertContains(__DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'resources.yml', $resources);
     }
 
     /**
@@ -244,7 +298,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testTrans($expected, $id, $translation, $parameters, $locale, $domain)
     {
-        $translator = new Translator('en', new MessageSelector());
+        $translator = new Translator('en');
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', array((string) $id => $translation), $locale, $domain);
 
@@ -269,12 +323,12 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testTransValidLocale($locale)
     {
-        $translator = new Translator('en', new MessageSelector());
+        $translator = new Translator($locale, new MessageSelector());
         $translator->addLoader('array', new ArrayLoader());
-        $translator->addResource('array', array('foo' => 'foofoo'), 'en');
+        $translator->addResource('array', array('test' => 'OK'), $locale);
 
-        $translator->trans('foo', array(), '', $locale);
-        // no assertion. this method just asserts that no exception is thrown
+        $this->assertEquals('OK', $translator->trans('test'));
+        $this->assertEquals('OK', $translator->trans('test', array(), null, $locale));
     }
 
     /**
@@ -282,7 +336,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testFlattenedTrans($expected, $messages, $id)
     {
-        $translator = new Translator('en', new MessageSelector());
+        $translator = new Translator('en');
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', $messages, 'fr', '');
 
@@ -294,7 +348,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testTransChoice($expected, $id, $translation, $number, $parameters, $locale, $domain)
     {
-        $translator = new Translator('en', new MessageSelector());
+        $translator = new Translator('en');
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', array((string) $id => $translation), $locale, $domain);
 
@@ -338,24 +392,25 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
             array('ts', 'QtFileLoader'),
             array('xlf', 'XliffFileLoader'),
             array('yml', 'YamlFileLoader'),
+            array('json', 'JsonFileLoader'),
         );
     }
 
     public function getTransTests()
     {
         return array(
-            array('Symfony2 est super !', 'Symfony2 is great!', 'Symfony2 est super !', array(), 'fr', ''),
-            array('Symfony2 est awesome !', 'Symfony2 is %what%!', 'Symfony2 est %what% !', array('%what%' => 'awesome'), 'fr', ''),
-            array('Symfony2 est super !', new String('Symfony2 is great!'), 'Symfony2 est super !', array(), 'fr', ''),
+            array('Symfony est super !', 'Symfony is great!', 'Symfony est super !', array(), 'fr', ''),
+            array('Symfony est awesome !', 'Symfony is %what%!', 'Symfony est %what% !', array('%what%' => 'awesome'), 'fr', ''),
+            array('Symfony est super !', new StringClass('Symfony is great!'), 'Symfony est super !', array(), 'fr', ''),
         );
     }
 
     public function getFlattenedTransTests()
     {
         $messages = array(
-            'symfony2' => array(
+            'symfony' => array(
                 'is' => array(
-                    'great' => 'Symfony2 est super!',
+                    'great' => 'Symfony est super!',
                 ),
             ),
             'foo' => array(
@@ -367,7 +422,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
         );
 
         return array(
-            array('Symfony2 est super!', $messages, 'symfony2.is.great'),
+            array('Symfony est super!', $messages, 'symfony.is.great'),
             array('Foo Bar Baz', $messages, 'foo.bar.baz'),
             array('Foo Baz', $messages, 'foo.baz'),
         );
@@ -392,7 +447,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
             array('Il y a 1 pomme', '{0} There are no apples|one: There is one apple|more: There is %count% apples', '{0} Il n\'y a aucune pomme|one: Il y a %count% pomme|more: Il y a %count% pommes', 1, array('%count%' => 1), 'fr', ''),
             array('Il y a 10 pommes', '{0} There are no apples|one: There is one apple|more: There is %count% apples', '{0} Il n\'y a aucune pomme|one: Il y a %count% pomme|more: Il y a %count% pommes', 10, array('%count%' => 10), 'fr', ''),
 
-            array('Il y a 0 pomme', new String('{0} There are no appless|{1} There is one apple|]1,Inf] There is %count% apples'), '[0,1] Il y a %count% pomme|]1,Inf] Il y a %count% pommes', 0, array('%count%' => 0), 'fr', ''),
+            array('Il y a 0 pomme', new StringClass('{0} There are no appless|{1} There is one apple|]1,Inf] There is %count% apples'), '[0,1] Il y a %count% pomme|]1,Inf] Il y a %count% pommes', 0, array('%count%' => 0), 'fr', ''),
         );
     }
 
@@ -432,7 +487,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function testTransChoiceFallback()
     {
-        $translator = new Translator('ru', new MessageSelector());
+        $translator = new Translator('ru');
         $translator->setFallbackLocales(array('en'));
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', array('some_message2' => 'one thing|%count% things'), 'en');
@@ -442,7 +497,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function testTransChoiceFallbackBis()
     {
-        $translator = new Translator('ru', new MessageSelector());
+        $translator = new Translator('ru');
         $translator->setFallbackLocales(array('en_US', 'en'));
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', array('some_message2' => 'one thing|%count% things'), 'en_US');
@@ -452,7 +507,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function testTransChoiceFallbackWithNoTranslation()
     {
-        $translator = new Translator('ru', new MessageSelector());
+        $translator = new Translator('ru');
         $translator->setFallbackLocales(array('en'));
         $translator->addLoader('array', new ArrayLoader());
 
@@ -462,7 +517,7 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class String
+class StringClass
 {
     protected $str;
 

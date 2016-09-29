@@ -1,22 +1,3 @@
 
 services:
-    rajkaran_portfolio.form.type.home:
-        class: Rajkaran\PortfolioBundle\Form\Type\HomeType
-        tags:
-            - { name: form.type, alias: home }
-
-    rajkaran_portfolio.form.type.careerTimeline:
-        class: Rajkaran\PortfolioBundle\Form\Type\CareerTimelineType
-        tags:
-            - { name: form.type, alias: careerTimeline }
-
-    rajkaran_portfolio.form.type.aboutMe:
-        class: Rajkaran\PortfolioBundle\Form\Type\AboutMeType
-        tags:
-            - { name: form.type, alias: aboutMe }
-
-
-    rajkaran_portfolio.form.type.contactMe:
-        class: Rajkaran\PortfolioBundle\Form\Type\ContactMeType
-        tags:
-            - { name: form.type, alias: contactMe }
+    

@@ -48,7 +48,7 @@ PHP's ``version_compare`` function.
 
 @Groups
 ~~~~~~~
-This annotation can be defined on a property to specifiy to if the property
+This annotation can be defined on a property to specify if the property
 should be serialized when only serializing specific groups (see
 :doc:`../cookbook/exclusion_strategies`).
 
@@ -148,7 +148,7 @@ default the order is undefined, but you may change it to either "alphabetical", 
     }
 
     /**
-     * @AccessorOrder("custom", custom = {"name", "SomeMethod" ,"id"})
+     * @AccessorOrder("custom", custom = {"name", "someMethod" ,"id"})
      *
      * Resulting Property Order: name, mood, id
      */
@@ -211,7 +211,7 @@ the object has been deserialized.
 @HandlerCallback
 ~~~~~~~~~~~~~~~~
 This annotation can be defined on a method if serialization/deserialization is handled
-by the object iself.
+by the object itself.
 
 .. code-block :: php
 
@@ -475,6 +475,8 @@ Resulting XML:
         </comment>
     </post>
 
+You can also specify the entry tag namespace using the ``namespace`` attribute (``@XmlList(inline = true, entry = "comment", namespace="http://www.example.com/ns")``). 
+
 @XmlMap
 ~~~~~~~
 Similar to @XmlList, but the keys of the array are meaningful.
@@ -531,7 +533,7 @@ This annotation can be defined on a property to add additional xml serialization
         /**
         * @XmlElement(cdata=false, namespace="http://www.w3.org/2005/Atom")
         */
-        private $id = 'my_id;
+        private $id = 'my_id';
     }
 
 Resulting XML:

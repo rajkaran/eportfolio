@@ -23,7 +23,7 @@ use Symfony\Component\Form\Exception\InvalidArgumentException;
 class FormRegistry implements FormRegistryInterface
 {
     /**
-     * Extensions
+     * Extensions.
      *
      * @var FormExtensionInterface[] An array of FormExtensionInterface
      */
@@ -48,7 +48,7 @@ class FormRegistry implements FormRegistryInterface
      * Constructor.
      *
      * @param FormExtensionInterface[]         $extensions          An array of FormExtensionInterface
-     * @param ResolvedFormTypeFactoryInterface $resolvedTypeFactory The factory for resolved form types.
+     * @param ResolvedFormTypeFactoryInterface $resolvedTypeFactory The factory for resolved form types
      *
      * @throws UnexpectedTypeException if any extension does not implement FormExtensionInterface
      */
@@ -69,10 +69,6 @@ class FormRegistry implements FormRegistryInterface
      */
     public function getType($name)
     {
-        if (!is_string($name)) {
-            throw new UnexpectedTypeException($name, 'string');
-        }
-
         if (!isset($this->types[$name])) {
             $type = null;
 
@@ -84,10 +80,15 @@ class FormRegistry implements FormRegistryInterface
             }
 
             if (!$type) {
-                throw new InvalidArgumentException(sprintf('Could not load type "%s"', $name));
+                // Support fully-qualified class names
+                if (class_exists($name) && in_array('Symfony\Component\Form\FormTypeInterface', class_implements($name))) {
+                    $type = new $name();
+                } else {
+                    throw new InvalidArgumentException(sprintf('Could not load type "%s"', $name));
+                }
             }
 
-            $this->resolveAndAddType($type);
+            $this->types[$name] = $this->resolveType($type);
         }
 
         return $this->types[$name];
@@ -97,29 +98,24 @@ class FormRegistry implements FormRegistryInterface
      * Wraps a type into a ResolvedFormTypeInterface implementation and connects
      * it with its parent type.
      *
-     * @param FormTypeInterface $type The type to resolve.
+     * @param FormTypeInterface $type The type to resolve
      *
-     * @return ResolvedFormTypeInterface The resolved type.
+     * @return ResolvedFormTypeInterface The resolved type
      */
-    private function resolveAndAddType(FormTypeInterface $type)
+    private function resolveType(FormTypeInterface $type)
     {
-        $parentType = $type->getParent();
-
-        if ($parentType instanceof FormTypeInterface) {
-            $this->resolveAndAddType($parentType);
-            $parentType = $parentType->getName();
-        }
-
         $typeExtensions = array();
+        $parentType = $type->getParent();
+        $fqcn = get_class($type);
 
         foreach ($this->extensions as $extension) {
             $typeExtensions = array_merge(
                 $typeExtensions,
-                $extension->getTypeExtensions($type->getName())
+                $extension->getTypeExtensions($fqcn)
             );
         }
 
-        $this->types[$type->getName()] = $this->resolvedTypeFactory->createResolvedType(
+        return $this->resolvedTypeFactory->createResolvedType(
             $type,
             $typeExtensions,
             $parentType ? $this->getType($parentType) : null

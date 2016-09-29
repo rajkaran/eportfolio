@@ -16,13 +16,6 @@ use Symfony\Component\Config\Resource\FileResource;
 
 class PoFileLoaderTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        if (!class_exists('Symfony\Component\Config\Loader\Loader')) {
-            $this->markTestSkipped('The "Config" component is not available');
-        }
-    }
-
     public function testLoad()
     {
         $loader = new PoFileLoader();
@@ -99,5 +92,17 @@ class PoFileLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('escaped "foos"', $messages);
         $this->assertEquals('escaped "bar"', $messages['escaped "foo"']);
         $this->assertEquals('escaped "bar"|escaped "bars"', $messages['escaped "foos"']);
+    }
+
+    public function testSkipFuzzyTranslations()
+    {
+        $loader = new PoFileLoader();
+        $resource = __DIR__.'/../fixtures/fuzzy-translations.po';
+        $catalogue = $loader->load($resource, 'en', 'domain1');
+
+        $messages = $catalogue->all('domain1');
+        $this->assertArrayHasKey('foo1', $messages);
+        $this->assertArrayNotHasKey('foo2', $messages);
+        $this->assertArrayHasKey('foo3', $messages);
     }
 }

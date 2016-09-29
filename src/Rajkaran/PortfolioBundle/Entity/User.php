@@ -39,7 +39,7 @@ class User implements UserInterface, \Serializable {
      * @ORM\Column(name="is_active", type="boolean")
      */
     private $isActive;
-	
+
 	/**
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="users")
      *
@@ -53,7 +53,7 @@ class User implements UserInterface, \Serializable {
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid(null, true));
     }
-	
+
     /**
      * @inheritDoc
      */
@@ -126,7 +126,7 @@ class User implements UserInterface, \Serializable {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -175,7 +175,7 @@ class User implements UserInterface, \Serializable {
     /**
      * Get email
      *
-     * @return string 
+     * @return string
      */
     public function getEmail()
     {
@@ -198,7 +198,7 @@ class User implements UserInterface, \Serializable {
     /**
      * Get isActive
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsActive()
     {

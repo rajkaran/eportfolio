@@ -131,9 +131,9 @@ class AnnotationDriver implements DriverInterface
             }
         }
 
-        if (!$excludeAll) {
+        if ( ! $excludeAll) {
             foreach ($class->getProperties() as $property) {
-                if ($property->class !== $name) {
+                if ($property->class !== $name || (isset($property->info) && $property->info['class'] !== $name)) {
                     continue;
                 }
                 $propertiesMetadata[] = new PropertyMetadata($name, $property->getName());
@@ -170,10 +170,13 @@ class AnnotationDriver implements DriverInterface
                         $propertyMetadata->xmlCollection = true;
                         $propertyMetadata->xmlCollectionInline = $annot->inline;
                         $propertyMetadata->xmlEntryName = $annot->entry;
+                        $propertyMetadata->xmlEntryNamespace = $annot->namespace;
+                        $propertyMetadata->xmlCollectionSkipWhenEmpty = $annot->skipWhenEmpty;
                     } elseif ($annot instanceof XmlMap) {
                         $propertyMetadata->xmlCollection = true;
                         $propertyMetadata->xmlCollectionInline = $annot->inline;
                         $propertyMetadata->xmlEntryName = $annot->entry;
+                        $propertyMetadata->xmlEntryNamespace = $annot->namespace;
                         $propertyMetadata->xmlKeyAttribute = $annot->keyAttribute;
                     } elseif ($annot instanceof XmlKeyValuePairs) {
                         $propertyMetadata->xmlKeyValuePairs = true;
@@ -188,7 +191,7 @@ class AnnotationDriver implements DriverInterface
                     } elseif ($annot instanceof AccessType) {
                         $accessType = $annot->type;
                     } elseif ($annot instanceof ReadOnly) {
-                       $propertyMetadata->readOnly = $annot->readOnly;
+                        $propertyMetadata->readOnly = $annot->readOnly;
                     } elseif ($annot instanceof Accessor) {
                         $accessor = array($annot->getter, $annot->setter);
                     } elseif ($annot instanceof Groups) {
@@ -211,10 +214,10 @@ class AnnotationDriver implements DriverInterface
                     }
                 }
 
-                $propertyMetadata->setAccessor($accessType, $accessor[0], $accessor[1]);
 
-                if ((ExclusionPolicy::NONE === $exclusionPolicy && !$isExclude)
+                if ((ExclusionPolicy::NONE === $exclusionPolicy && ! $isExclude)
                     || (ExclusionPolicy::ALL === $exclusionPolicy && $isExpose)) {
+                    $propertyMetadata->setAccessor($accessType, $accessor[0], $accessor[1]);
                     $classMetadata->addPropertyMetadata($propertyMetadata);
                 }
             }

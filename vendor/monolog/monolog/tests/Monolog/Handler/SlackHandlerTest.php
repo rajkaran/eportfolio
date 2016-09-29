@@ -13,6 +13,7 @@ namespace Monolog\Handler;
 
 use Monolog\TestCase;
 use Monolog\Logger;
+use Monolog\Formatter\LineFormatter;
 
 /**
  * @author Greg Kedzierski <greg@gregkedzierski.com>
@@ -56,7 +57,24 @@ class SlackHandlerTest extends TestCase
 
         $this->assertRegexp('/token=myToken&channel=channel1&username=Monolog&text=&attachments=.*$/', $content);
     }
-    
+
+    public function testWriteContentUsesFormatterIfProvided()
+    {
+        $this->createHandler('myToken', 'channel1', 'Monolog', false);
+        $this->handler->handle($this->getRecord(Logger::CRITICAL, 'test1'));
+        fseek($this->res, 0);
+        $content = fread($this->res, 1024);
+
+        $this->createHandler('myToken', 'channel1', 'Monolog', false);
+        $this->handler->setFormatter(new LineFormatter('foo--%message%'));
+        $this->handler->handle($this->getRecord(Logger::CRITICAL, 'test2'));
+        fseek($this->res, 0);
+        $content2 = fread($this->res, 1024);
+
+        $this->assertRegexp('/token=myToken&channel=channel1&username=Monolog&text=test1.*$/', $content);
+        $this->assertRegexp('/token=myToken&channel=channel1&username=Monolog&text=foo--test2.*$/', $content2);
+    }
+
     public function testWriteContentWithEmoji()
     {
         $this->createHandler('myToken', 'channel1', 'Monolog', true, 'alien');
@@ -104,9 +122,9 @@ class SlackHandlerTest extends TestCase
         );
     }
 
-    private function createHandler($token = 'myToken', $channel = 'channel1', $username = 'Monolog', $useAttachment = true, $iconEmoji = null)
+    private function createHandler($token = 'myToken', $channel = 'channel1', $username = 'Monolog', $useAttachment = true, $iconEmoji = null, $useShortAttachment = false, $includeExtra = false)
     {
-        $constructorArgs = array($token, $channel, $username, $useAttachment, $iconEmoji, Logger::DEBUG, true);
+        $constructorArgs = array($token, $channel, $username, $useAttachment, $iconEmoji, Logger::DEBUG, true, $useShortAttachment, $includeExtra);
         $this->res = fopen('php://memory', 'a');
         $this->handler = $this->getMock(
             '\Monolog\Handler\SlackHandler',

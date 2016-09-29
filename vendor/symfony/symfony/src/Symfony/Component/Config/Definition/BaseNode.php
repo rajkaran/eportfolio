@@ -14,9 +14,10 @@ namespace Symfony\Component\Config\Definition;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Config\Definition\Exception\ForbiddenOverwriteException;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 
 /**
- * The base node class
+ * The base node class.
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
@@ -24,11 +25,11 @@ abstract class BaseNode implements NodeInterface
 {
     protected $name;
     protected $parent;
-    protected $normalizationClosures;
-    protected $finalValidationClosures;
-    protected $allowOverwrite;
-    protected $required;
-    protected $equivalentValues;
+    protected $normalizationClosures = array();
+    protected $finalValidationClosures = array();
+    protected $allowOverwrite = true;
+    protected $required = false;
+    protected $equivalentValues = array();
     protected $attributes = array();
 
     /**
@@ -47,11 +48,6 @@ abstract class BaseNode implements NodeInterface
 
         $this->name = $name;
         $this->parent = $parent;
-        $this->normalizationClosures = array();
-        $this->finalValidationClosures = array();
-        $this->allowOverwrite = true;
-        $this->required = false;
-        $this->equivalentValues = array();
     }
 
     public function setAttribute($key, $value)
@@ -138,7 +134,7 @@ abstract class BaseNode implements NodeInterface
     /**
      * Set this node as required.
      *
-     * @param bool    $boolean Required node
+     * @param bool $boolean Required node
      */
     public function setRequired($boolean)
     {
@@ -148,7 +144,7 @@ abstract class BaseNode implements NodeInterface
     /**
      * Sets if this node can be overridden.
      *
-     * @param bool    $allow
+     * @param bool $allow
      */
     public function setAllowOverwrite($allow)
     {
@@ -186,9 +182,9 @@ abstract class BaseNode implements NodeInterface
     }
 
     /**
-     * Returns the name of this node
+     * Returns the name of this node.
      *
-     * @return string The Node's name.
+     * @return string The Node's name
      */
     public function getName()
     {
@@ -241,9 +237,9 @@ abstract class BaseNode implements NodeInterface
     /**
      * Normalizes a value, applying all normalization closures.
      *
-     * @param mixed $value Value to normalize.
+     * @param mixed $value Value to normalize
      *
-     * @return mixed The normalized value.
+     * @return mixed The normalized value
      */
     final public function normalize($value)
     {
@@ -281,6 +277,16 @@ abstract class BaseNode implements NodeInterface
     }
 
     /**
+     * Returns parent node for this node.
+     *
+     * @return NodeInterface|null
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
      * Finalizes a value, applying all finalization closures.
      *
      * @param mixed $value The value to finalize
@@ -301,14 +307,10 @@ abstract class BaseNode implements NodeInterface
         foreach ($this->finalValidationClosures as $closure) {
             try {
                 $value = $closure($value);
-            } catch (Exception $correctEx) {
-                throw $correctEx;
-            } catch (\Exception $invalid) {
-                throw new InvalidConfigurationException(sprintf(
-                    'Invalid configuration for path "%s": %s',
-                    $this->getPath(),
-                    $invalid->getMessage()
-                ), $invalid->getCode(), $invalid);
+            } catch (Exception $e) {
+                throw $e;
+            } catch (\Exception $e) {
+                throw new InvalidConfigurationException(sprintf('Invalid configuration for path "%s": %s', $this->getPath(), $e->getMessage()), $e->getCode(), $e);
             }
         }
 
@@ -327,7 +329,7 @@ abstract class BaseNode implements NodeInterface
     /**
      * Normalizes the value.
      *
-     * @param mixed $value The value to normalize.
+     * @param mixed $value The value to normalize
      *
      * @return mixed The normalized value
      */

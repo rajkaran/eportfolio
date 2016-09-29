@@ -48,12 +48,18 @@ class SerializationContext extends Context
 
     public function startVisiting($object)
     {
+        if ( ! is_object($object)) {
+            return;
+        }
         $this->visitingSet->attach($object);
         $this->visitingStack->push($object);
     }
 
     public function stopVisiting($object)
     {
+        if ( ! is_object($object)) {
+            return;
+        }
         $this->visitingSet->detach($object);
         $poppedObject = $this->visitingStack->pop();
 
@@ -64,8 +70,8 @@ class SerializationContext extends Context
 
     public function isVisiting($object)
     {
-        if (! is_object($object)) {
-            throw new LogicException('Expected object but got ' . gettype($object) . '. Do you have the wrong @Type mapping or could this be a Doctrine many-to-many relation?');
+        if ( ! is_object($object)) {
+            return false;
         }
 
         return $this->visitingSet->contains($object);
@@ -97,7 +103,7 @@ class SerializationContext extends Context
 
     public function getObject()
     {
-        return !$this->visitingStack->isEmpty() ? $this->visitingStack->top() : null;
+        return ! $this->visitingStack->isEmpty() ? $this->visitingStack->top() : null;
     }
 
     public function getVisitingStack()

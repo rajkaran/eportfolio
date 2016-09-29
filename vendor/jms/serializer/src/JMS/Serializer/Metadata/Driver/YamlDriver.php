@@ -34,7 +34,7 @@ class YamlDriver extends AbstractFileDriver
     {
         $config = Yaml::parse(file_get_contents($file));
 
-        if (!isset($config[$name = $class->name])) {
+        if ( ! isset($config[$name = $class->name])) {
             throw new RuntimeException(sprintf('Expected metadata for class %s to be defined in %s.', $class->name, $file));
         }
 
@@ -45,17 +45,17 @@ class YamlDriver extends AbstractFileDriver
         $exclusionPolicy = isset($config['exclusion_policy']) ? strtoupper($config['exclusion_policy']) : 'NONE';
         $excludeAll = isset($config['exclude']) ? (Boolean) $config['exclude'] : false;
         $classAccessType = isset($config['access_type']) ? $config['access_type'] : PropertyMetadata::ACCESS_TYPE_PROPERTY;
-        $readOnlyClass =  isset($config['read_only']) ? (Boolean) $config['read_only'] : false;
+        $readOnlyClass = isset($config['read_only']) ? (Boolean) $config['read_only'] : false;
         $this->addClassProperties($metadata, $config);
 
         $propertiesMetadata = array();
-        if (array_key_exists('virtual_properties', $config) ) {
-            foreach ( $config['virtual_properties'] as $methodName => $propertySettings ) {
-                if ( ! $class->hasMethod( $methodName ) ) {
-                    throw new RuntimeException('The method '.$methodName.' not found in class ' . $class->name);
+        if (array_key_exists('virtual_properties', $config)) {
+            foreach ($config['virtual_properties'] as $methodName => $propertySettings) {
+                if ( ! $class->hasMethod($methodName)) {
+                    throw new RuntimeException('The method '.$methodName.' not found in class '.$class->name);
                 }
 
-                $virtualPropertyMetadata = new VirtualPropertyMetadata( $name, $methodName );
+                $virtualPropertyMetadata = new VirtualPropertyMetadata($name, $methodName);
 
                 $propertiesMetadata[$methodName] = $virtualPropertyMetadata;
                 $config['properties'][$methodName] = $propertySettings;
@@ -64,7 +64,7 @@ class YamlDriver extends AbstractFileDriver
 
         if ( ! $excludeAll) {
             foreach ($class->getProperties() as $property) {
-                if ($name !== $property->class) {
+                if ($property->class !== $name || (isset($property->info) && $property->info['class'] !== $name)) {
                     continue;
                 }
 
@@ -113,11 +113,21 @@ class YamlDriver extends AbstractFileDriver
 
                         $colConfig = $pConfig['xml_list'];
                         if (isset($colConfig['inline'])) {
-                            $pMetadata->xmlCollectionInline = (Boolean) $colConfig['inline'];
+                            $pMetadata->xmlCollectionInline = (Boolean)$colConfig['inline'];
                         }
 
                         if (isset($colConfig['entry_name'])) {
-                            $pMetadata->xmlEntryName = (string) $colConfig['entry_name'];
+                            $pMetadata->xmlEntryName = (string)$colConfig['entry_name'];
+                        }
+
+                        if (isset($colConfig['skip_when_empty'])) {
+                            $pMetadata->xmlCollectionSkipWhenEmpty = (Boolean)$colConfig['skip_when_empty'];
+                        } else {
+                            $pMetadata->xmlCollectionSkipWhenEmpty = true;
+                        }
+
+                        if (isset($colConfig['namespace'])) {
+                            $pMetadata->xmlEntryNamespace = (string) $colConfig['namespace'];
                         }
                     }
 
@@ -133,9 +143,14 @@ class YamlDriver extends AbstractFileDriver
                             $pMetadata->xmlEntryName = (string) $colConfig['entry_name'];
                         }
 
+                        if (isset($colConfig['namespace'])) {
+                            $pMetadata->xmlEntryNamespace = (string) $colConfig['namespace'];
+                        }
+
                         if (isset($colConfig['key_attribute_name'])) {
                             $pMetadata->xmlKeyAttribute = $colConfig['key_attribute_name'];
                         }
+
                     }
 
                     if (isset($pConfig['xml_element'])) {
@@ -186,7 +201,7 @@ class YamlDriver extends AbstractFileDriver
                         $pMetadata->maxDepth = (int) $pConfig['max_depth'];
                     }
                 }
-                if ((ExclusionPolicy::NONE === $exclusionPolicy && !$isExclude)
+                if ((ExclusionPolicy::NONE === $exclusionPolicy && ! $isExclude)
                         || (ExclusionPolicy::ALL === $exclusionPolicy && $isExpose)) {
                     $metadata->addPropertyMetadata($pMetadata);
                 }
@@ -194,9 +209,9 @@ class YamlDriver extends AbstractFileDriver
         }
 
         if (isset($config['handler_callbacks'])) {
-            foreach ($config['handler_callbacks'] as $direction => $formats) {
+            foreach ($config['handler_callbacks'] as $directionName => $formats) {
+                $direction = GraphNavigator::parseDirection($directionName);
                 foreach ($formats as $format => $methodName) {
-                    $direction = GraphNavigator::parseDirection($direction);
                     $metadata->addHandlerCallback($direction, $format, $methodName);
                 }
             }
@@ -242,9 +257,9 @@ class YamlDriver extends AbstractFileDriver
             $metadata->xmlRootNamespace = (string) $config['xml_root_namespace'];
         }
 
-        if (array_key_exists('xml_namespaces', $config) ) {
+        if (array_key_exists('xml_namespaces', $config)) {
 
-            foreach ( $config['xml_namespaces'] as $prefix => $uri) {
+            foreach ($config['xml_namespaces'] as $prefix => $uri) {
                 $metadata->registerNamespace($uri, $prefix);
             }
 
@@ -271,13 +286,13 @@ class YamlDriver extends AbstractFileDriver
     {
         if (is_string($config)) {
             $config = array($config);
-        } elseif (!is_array($config)) {
+        } elseif ( ! is_array($config)) {
             throw new RuntimeException(sprintf('callback methods expects a string, or an array of strings that represent method names, but got %s.', json_encode($config['pre_serialize'])));
         }
 
         $methods = array();
         foreach ($config as $name) {
-            if (!$class->hasMethod($name)) {
+            if ( ! $class->hasMethod($name)) {
                 throw new RuntimeException(sprintf('The method %s does not exist in class %s.', $name, $class->name));
             }
 

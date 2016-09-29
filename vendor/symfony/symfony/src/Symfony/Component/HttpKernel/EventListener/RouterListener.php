@@ -13,9 +13,11 @@ namespace Symfony\Component\HttpKernel\EventListener;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
@@ -35,18 +37,19 @@ class RouterListener implements EventSubscriberInterface
     private $matcher;
     private $context;
     private $logger;
-    private $request;
+    private $requestStack;
 
     /**
      * Constructor.
      *
-     * @param UrlMatcherInterface|RequestMatcherInterface $matcher The Url or Request matcher
-     * @param RequestContext|null                         $context The RequestContext (can be null when $matcher implements RequestContextAwareInterface)
-     * @param LoggerInterface|null                        $logger  The logger
+     * @param UrlMatcherInterface|RequestMatcherInterface $matcher      The Url or Request matcher
+     * @param RequestStack                                $requestStack A RequestStack instance
+     * @param RequestContext|null                         $context      The RequestContext (can be null when $matcher implements RequestContextAwareInterface)
+     * @param LoggerInterface|null                        $logger       The logger
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct($matcher, RequestContext $context = null, LoggerInterface $logger = null)
+    public function __construct($matcher, RequestStack $requestStack, RequestContext $context = null, LoggerInterface $logger = null)
     {
         if (!$matcher instanceof UrlMatcherInterface && !$matcher instanceof RequestMatcherInterface) {
             throw new \InvalidArgumentException('Matcher must either implement UrlMatcherInterface or RequestMatcherInterface.');
@@ -58,35 +61,33 @@ class RouterListener implements EventSubscriberInterface
 
         $this->matcher = $matcher;
         $this->context = $context ?: $matcher->getContext();
+        $this->requestStack = $requestStack;
         $this->logger = $logger;
     }
 
-    /**
-     * Sets the current Request.
-     *
-     * The application should call this method whenever the Request
-     * object changes (entering a Request scope for instance, but
-     * also when leaving a Request scope -- especially when they are
-     * nested).
-     *
-     * @param Request|null $request A Request instance
-     */
-    public function setRequest(Request $request = null)
+    private function setCurrentRequest(Request $request = null)
     {
-        if (null !== $request && $this->request !== $request) {
+        if (null !== $request) {
             $this->context->fromRequest($request);
         }
-        $this->request = $request;
+    }
+
+    /**
+     * After a sub-request is done, we need to reset the routing context to the parent request so that the URL generator
+     * operates on the correct context again.
+     *
+     * @param FinishRequestEvent $event
+     */
+    public function onKernelFinishRequest(FinishRequestEvent $event)
+    {
+        $this->setCurrentRequest($this->requestStack->getParentRequest());
     }
 
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
 
-        // initialize the context that is also used by the generator (assuming matcher and generator share the same context instance)
-        // we call setRequest even if most of the time, it has already been done to keep compatibility
-        // with frameworks which do not use the Symfony service container
-        $this->setRequest($request);
+        $this->setCurrentRequest($request);
 
         if ($request->attributes->has('_controller')) {
             // routing is already done
@@ -103,15 +104,23 @@ class RouterListener implements EventSubscriberInterface
             }
 
             if (null !== $this->logger) {
-                $this->logger->info(sprintf('Matched route "%s" (parameters: %s)', $parameters['_route'], $this->parametersToString($parameters)));
+                $this->logger->info('Matched route "{route}".', array(
+                    'route' => isset($parameters['_route']) ? $parameters['_route'] : 'n/a',
+                    'route_parameters' => $parameters,
+                    'request_uri' => $request->getUri(),
+                    'method' => $request->getMethod(),
+                ));
             }
 
             $request->attributes->add($parameters);
-            unset($parameters['_route']);
-            unset($parameters['_controller']);
+            unset($parameters['_route'], $parameters['_controller']);
             $request->attributes->set('_route_params', $parameters);
         } catch (ResourceNotFoundException $e) {
             $message = sprintf('No route found for "%s %s"', $request->getMethod(), $request->getPathInfo());
+
+            if ($referer = $request->headers->get('referer')) {
+                $message .= sprintf(' (from "%s")', $referer);
+            }
 
             throw new NotFoundHttpException($message, $e);
         } catch (MethodNotAllowedException $e) {
@@ -121,20 +130,11 @@ class RouterListener implements EventSubscriberInterface
         }
     }
 
-    private function parametersToString(array $parameters)
-    {
-        $pieces = array();
-        foreach ($parameters as $key => $val) {
-            $pieces[] = sprintf('"%s": "%s"', $key, (is_string($val) ? $val : json_encode($val)));
-        }
-
-        return implode(', ', $pieces);
-    }
-
     public static function getSubscribedEvents()
     {
         return array(
             KernelEvents::REQUEST => array(array('onKernelRequest', 32)),
+            KernelEvents::FINISH_REQUEST => array(array('onKernelFinishRequest', 0)),
         );
     }
 }

@@ -42,7 +42,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
 
         $data = $this->prepareTestData(array('foo' => 'foobar'));
 
-        $this->expectValidateValueAt(0, '[foo]', $data['foo'], array($constraint), 'MyGroup');
+        $this->expectValidateValueAt(0, '[foo]', $data['foo'], array($constraint));
 
         $this->validator->validate($data, new Collection(array(
             'foo' => $constraint,
@@ -73,7 +73,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
         $i = 0;
 
         foreach ($array as $key => $value) {
-            $this->expectValidateValueAt($i++, '['.$key.']', $value, array($constraint), 'MyGroup');
+            $this->expectValidateValueAt($i++, '['.$key.']', $value, array($constraint));
         }
 
         $data = $this->prepareTestData($array);
@@ -103,7 +103,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
         $i = 0;
 
         foreach ($array as $key => $value) {
-            $this->expectValidateValueAt($i++, '['.$key.']', $value, $constraints, 'MyGroup');
+            $this->expectValidateValueAt($i++, '['.$key.']', $value, $constraints);
         }
 
         $data = $this->prepareTestData($array);
@@ -127,7 +127,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
             'baz' => 6,
         ));
 
-        $this->expectValidateValueAt(0, '[foo]', $data['foo'], array($constraint), 'MyGroup');
+        $this->expectValidateValueAt(0, '[foo]', $data['foo'], array($constraint));
 
         $this->validator->validate($data, new Collection(array(
             'fields' => array(
@@ -140,6 +140,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
             ->setParameter('{{ field }}', '"baz"')
             ->atPath('property.path[baz]')
             ->setInvalidValue(6)
+            ->setCode(Collection::NO_SUCH_FIELD_ERROR)
             ->assertRaised();
     }
 
@@ -152,7 +153,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
 
         $constraint = new Range(array('min' => 4));
 
-        $this->expectValidateValueAt(0, '[foo]', $data['foo'], array($constraint), 'MyGroup');
+        $this->expectValidateValueAt(0, '[foo]', $data['foo'], array($constraint));
 
         $this->validator->validate($data, new Collection(array(
             'fields' => array(
@@ -172,7 +173,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
 
         $constraint = new Range(array('min' => 4));
 
-        $this->expectValidateValueAt(0, '[foo]', $data['foo'], array($constraint), 'MyGroup');
+        $this->expectValidateValueAt(0, '[foo]', $data['foo'], array($constraint));
 
         $this->validator->validate($data, new Collection(array(
             'fields' => array(
@@ -201,6 +202,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
             ->setParameter('{{ field }}', '"foo"')
             ->atPath('property.path[foo]')
             ->setInvalidValue(null)
+            ->setCode(Collection::MISSING_FIELD_ERROR)
             ->assertRaised();
     }
 
@@ -252,7 +254,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
 
         $constraint = new Range(array('min' => 4));
 
-        $this->expectValidateValueAt(0, '[foo]', $array['foo'], array($constraint), 'MyGroup');
+        $this->expectValidateValueAt(0, '[foo]', $array['foo'], array($constraint));
 
         $data = $this->prepareTestData($array);
 
@@ -274,7 +276,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
             new Range(array('min' => 4)),
         );
 
-        $this->expectValidateValueAt(0, '[foo]', $array['foo'], $constraints, 'MyGroup');
+        $this->expectValidateValueAt(0, '[foo]', $array['foo'], $constraints);
 
         $data = $this->prepareTestData($array);
 
@@ -313,6 +315,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
             ->setParameter('{{ field }}', '"foo"')
             ->atPath('property.path[foo]')
             ->setInvalidValue(null)
+            ->setCode(Collection::MISSING_FIELD_ERROR)
             ->assertRaised();
     }
 
@@ -324,7 +327,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
 
         $constraint = new Range(array('min' => 4));
 
-        $this->expectValidateValueAt(0, '[foo]', $array['foo'], array($constraint), 'MyGroup');
+        $this->expectValidateValueAt(0, '[foo]', $array['foo'], array($constraint));
 
         $data = $this->prepareTestData($array);
 
@@ -346,7 +349,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
             new Range(array('min' => 4)),
         );
 
-        $this->expectValidateValueAt(0, '[foo]', $array['foo'], $constraints, 'MyGroup');
+        $this->expectValidateValueAt(0, '[foo]', $array['foo'], $constraints);
 
         $data = $this->prepareTestData($array);
 
@@ -365,7 +368,7 @@ abstract class CollectionValidatorTest extends AbstractConstraintValidatorTest
 
         $constraint = new Range(array('min' => 2));
 
-        $this->expectValidateValueAt(0, '[foo]', $value['foo'], array($constraint), 'MyGroup');
+        $this->expectValidateValueAt(0, '[foo]', $value['foo'], array($constraint));
 
         $this->validator->validate($value, new Collection(array(
             'fields' => array(

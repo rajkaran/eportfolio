@@ -24,17 +24,17 @@ namespace Symfony\Component\HttpFoundation\Session\Storage\Handler;
 class MemcachedSessionHandler implements \SessionHandlerInterface
 {
     /**
-     * @var \Memcached Memcached driver.
+     * @var \Memcached Memcached driver
      */
     private $memcached;
 
     /**
-     * @var int     Time to live in seconds
+     * @var int Time to live in seconds
      */
     private $ttl;
 
     /**
-     * @var string Key prefix for shared environments.
+     * @var string Key prefix for shared environments
      */
     private $prefix;
 
@@ -111,5 +111,15 @@ class MemcachedSessionHandler implements \SessionHandlerInterface
     {
         // not required here because memcached will auto expire the records anyhow.
         return true;
+    }
+
+    /**
+     * Return a Memcached instance.
+     *
+     * @return \Memcached
+     */
+    protected function getMemcached()
+    {
+        return $this->memcached;
     }
 }

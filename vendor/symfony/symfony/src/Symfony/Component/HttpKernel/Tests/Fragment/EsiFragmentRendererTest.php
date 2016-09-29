@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\HttpKernel\Tests\Fragment;
 
+use Symfony\Bridge\PhpUnit\ErrorAssert;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
 use Symfony\Component\HttpKernel\Fragment\EsiFragmentRenderer;
 use Symfony\Component\HttpKernel\HttpCache\Esi;
@@ -19,23 +20,24 @@ use Symfony\Component\HttpKernel\UriSigner;
 
 class EsiFragmentRendererTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        if (!class_exists('Symfony\Component\HttpFoundation\Request')) {
-            $this->markTestSkipped('The "HttpFoundation" component is not available');
-        }
-    }
-
-    public function testRenderFallbackToInlineStrategyIfNoRequest()
-    {
-        $strategy = new EsiFragmentRenderer(new Esi(), $this->getInlineStrategy(true));
-        $strategy->render('/', Request::create('/'));
-    }
-
     public function testRenderFallbackToInlineStrategyIfEsiNotSupported()
     {
         $strategy = new EsiFragmentRenderer(new Esi(), $this->getInlineStrategy(true));
         $strategy->render('/', Request::create('/'));
+    }
+
+    /**
+     * @group legacy
+     * @requires function Symfony\Bridge\PhpUnit\ErrorAssert::assertDeprecationsAreTriggered
+     */
+    public function testRenderFallbackWithObjectAttributesIsDeprecated()
+    {
+        ErrorAssert::assertDeprecationsAreTriggered('Passing non-scalar values as part of URI attributes to the ESI and SSI rendering strategies is deprecated', function () {
+            $strategy = new EsiFragmentRenderer(new Esi(), $this->getInlineStrategy(true), new UriSigner('foo'));
+            $request = Request::create('/');
+            $reference = new ControllerReference('main_controller', array('foo' => array('a' => array(), 'b' => new \stdClass())), array());
+            $strategy->render($reference, $request);
+        });
     }
 
     public function testRender()
@@ -64,7 +66,7 @@ class EsiFragmentRendererTest extends \PHPUnit_Framework_TestCase
         $altReference = new ControllerReference('alt_controller', array(), array());
 
         $this->assertEquals(
-            '<esi:include src="/_fragment?_path=_format%3Dhtml%26_locale%3Dfr%26_controller%3Dmain_controller&_hash=wDaFy1WsZUOWrrMdRMgJ1cOskFo%3D" alt="/_fragment?_path=_format%3Dhtml%26_locale%3Dfr%26_controller%3Dalt_controller&_hash=56ycnRUlgaremRQVStZsGbVhIv8%3D" />',
+            '<esi:include src="/_fragment?_path=_format%3Dhtml%26_locale%3Dfr%26_controller%3Dmain_controller&_hash=Jz1P8NErmhKTeI6onI1EdAXTB85359MY3RIk5mSJ60w%3D" alt="/_fragment?_path=_format%3Dhtml%26_locale%3Dfr%26_controller%3Dalt_controller&_hash=iPJEdRoUpGrM1ztqByiorpfMPtiW%2FOWwdH1DBUXHhEc%3D" />',
             $strategy->render($reference, $request, array('alt' => $altReference))->getContent()
         );
     }

@@ -11,6 +11,9 @@
 
 namespace Symfony\Component\HttpKernel\Tests\Fragment;
 
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer;
@@ -21,17 +24,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        if (!class_exists('Symfony\Component\EventDispatcher\EventDispatcher')) {
-            $this->markTestSkipped('The "EventDispatcher" component is not available');
-        }
-
-        if (!class_exists('Symfony\Component\HttpFoundation\Request')) {
-            $this->markTestSkipped('The "HttpFoundation" component is not available');
-        }
-    }
-
     public function testRender()
     {
         $strategy = new InlineFragmentRenderer($this->getKernel($this->returnValue(new Response('foo'))));
@@ -58,6 +50,48 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
         $strategy = new InlineFragmentRenderer($this->getKernelExpectingRequest($subRequest));
 
         $strategy->render(new ControllerReference('main_controller', array('object' => $object), array()), Request::create('/'));
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testRenderWithObjectsAsAttributesPassedAsObjectsInTheControllerLegacy()
+    {
+        $resolver = $this->getMock('Symfony\\Component\\HttpKernel\\Controller\\ControllerResolver', array('getController'));
+        $resolver
+            ->expects($this->once())
+            ->method('getController')
+            ->will($this->returnValue(function (\stdClass $object, Bar $object1) {
+                return new Response($object1->getBar());
+            }))
+        ;
+
+        $kernel = new HttpKernel(new EventDispatcher(), $resolver, new RequestStack());
+        $renderer = new InlineFragmentRenderer($kernel);
+
+        $response = $renderer->render(new ControllerReference('main_controller', array('object' => new \stdClass(), 'object1' => new Bar()), array()), Request::create('/'));
+        $this->assertEquals('bar', $response->getContent());
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testRenderWithObjectsAsAttributesPassedAsObjectsInTheController()
+    {
+        $resolver = $this->getMock(ControllerResolverInterface::class);
+        $resolver
+            ->expects($this->once())
+            ->method('getController')
+            ->will($this->returnValue(function (\stdClass $object, Bar $object1) {
+                return new Response($object1->getBar());
+            }))
+        ;
+
+        $kernel = new HttpKernel(new EventDispatcher(), $resolver, new RequestStack(), new ArgumentResolver());
+        $renderer = new InlineFragmentRenderer($kernel);
+
+        $response = $renderer->render(new ControllerReference('main_controller', array('object' => new \stdClass(), 'object1' => new Bar()), array()), Request::create('/'));
+        $this->assertEquals('bar', $response->getContent());
     }
 
     public function testRenderWithTrustedHeaderDisabled()
@@ -119,7 +153,7 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Creates a Kernel expecting a request equals to $request
-     * Allows delta in comparison in case REQUEST_TIME changed by 1 second
+     * Allows delta in comparison in case REQUEST_TIME changed by 1 second.
      */
     private function getKernelExpectingRequest(Request $request)
     {
@@ -135,8 +169,8 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
 
     public function testExceptionInSubRequestsDoesNotMangleOutputBuffers()
     {
-        $resolver = $this->getMock('Symfony\\Component\\HttpKernel\\Controller\\ControllerResolverInterface');
-        $resolver
+        $controllerResolver = $this->getMock('Symfony\\Component\\HttpKernel\\Controller\\ControllerResolverInterface');
+        $controllerResolver
             ->expects($this->once())
             ->method('getController')
             ->will($this->returnValue(function () {
@@ -145,13 +179,15 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
                 throw new \RuntimeException();
             }))
         ;
-        $resolver
+
+        $argumentResolver = $this->getMock('Symfony\\Component\\HttpKernel\\Controller\\ArgumentResolverInterface');
+        $argumentResolver
             ->expects($this->once())
             ->method('getArguments')
             ->will($this->returnValue(array()))
         ;
 
-        $kernel = new HttpKernel(new EventDispatcher(), $resolver);
+        $kernel = new HttpKernel(new EventDispatcher(), $controllerResolver, new RequestStack(), $argumentResolver);
         $renderer = new InlineFragmentRenderer($kernel);
 
         // simulate a main request with output buffering
@@ -189,5 +225,28 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
         $this->testESIHeaderIsKeptInSubrequest();
 
         Request::setTrustedHeaderName(Request::HEADER_CLIENT_IP, $trustedHeaderName);
+    }
+
+    public function testHeadersPossiblyResultingIn304AreNotAssignedToSubrequest()
+    {
+        $expectedSubRequest = Request::create('/');
+        if (Request::getTrustedHeaderName(Request::HEADER_CLIENT_IP)) {
+            $expectedSubRequest->headers->set('x-forwarded-for', array('127.0.0.1'));
+            $expectedSubRequest->server->set('HTTP_X_FORWARDED_FOR', '127.0.0.1');
+        }
+
+        $strategy = new InlineFragmentRenderer($this->getKernelExpectingRequest($expectedSubRequest));
+        $request = Request::create('/', 'GET', array(), array(), array(), array('HTTP_IF_MODIFIED_SINCE' => 'Fri, 01 Jan 2016 00:00:00 GMT', 'HTTP_IF_NONE_MATCH' => '*'));
+        $strategy->render('/', $request);
+    }
+}
+
+class Bar
+{
+    public $bar = 'bar';
+
+    public function getBar()
+    {
+        return $this->bar;
     }
 }

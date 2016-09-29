@@ -18,15 +18,6 @@ use Doctrine\ORM\Tools\SchemaTool;
 
 class EntityUserProviderTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        if (!class_exists('Symfony\Component\Security\Core\SecurityContext')) {
-            $this->markTestSkipped('The "Security" component is not available');
-        }
-
-        parent::setUp();
-    }
-
     public function testRefreshUserGetsUserByPrimaryKey()
     {
         $em = DoctrineTestHelper::createTestEntityManager();
@@ -45,6 +36,65 @@ class EntityUserProviderTest extends \PHPUnit_Framework_TestCase
         $user1->name = 'user2';
 
         $this->assertSame($user1, $provider->refreshUser($user1));
+    }
+
+    public function testLoadUserByUsername()
+    {
+        $em = DoctrineTestHelper::createTestEntityManager();
+        $this->createSchema($em);
+
+        $user = new User(1, 1, 'user1');
+
+        $em->persist($user);
+        $em->flush();
+
+        $provider = new EntityUserProvider($this->getManager($em), 'Symfony\Bridge\Doctrine\Tests\Fixtures\User', 'name');
+
+        $this->assertSame($user, $provider->loadUserByUsername('user1'));
+    }
+
+    public function testLoadUserByUsernameWithUserLoaderRepositoryAndWithoutProperty()
+    {
+        $user = new User(1, 1, 'user1');
+
+        $repository = $this->getMockBuilder('Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $repository
+            ->expects($this->once())
+            ->method('loadUserByUsername')
+            ->with('user1')
+            ->willReturn($user);
+
+        $em = $this->getMockBuilder('Doctrine\ORM\EntityManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $em
+            ->expects($this->once())
+            ->method('getRepository')
+            ->with('Symfony\Bridge\Doctrine\Tests\Fixtures\User')
+            ->willReturn($repository);
+
+        $provider = new EntityUserProvider($this->getManager($em), 'Symfony\Bridge\Doctrine\Tests\Fixtures\User');
+        $this->assertSame($user, $provider->loadUserByUsername('user1'));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage You must either make the "Symfony\Bridge\Doctrine\Tests\Fixtures\User" entity Doctrine Repository ("Doctrine\ORM\EntityRepository") implement "Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface" or set the "property" option in the corresponding entity provider configuration.
+     */
+    public function testLoadUserByUsernameWithNonUserLoaderRepositoryAndWithoutProperty()
+    {
+        $em = DoctrineTestHelper::createTestEntityManager();
+        $this->createSchema($em);
+
+        $user = new User(1, 1, 'user1');
+
+        $em->persist($user);
+        $em->flush();
+
+        $provider = new EntityUserProvider($this->getManager($em), 'Symfony\Bridge\Doctrine\Tests\Fixtures\User');
+        $provider->loadUserByUsername('user1');
     }
 
     public function testRefreshUserRequiresId()
@@ -98,15 +148,60 @@ class EntityUserProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($provider->supportsClass(get_class($user2)));
     }
 
+    public function testLoadUserByUserNameShouldLoadUserWhenProperInterfaceProvided()
+    {
+        $repository = $this->getMock('\Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface');
+        $repository->expects($this->once())
+            ->method('loadUserByUsername')
+            ->with('name')
+            ->willReturn(
+                $this->getMock('\Symfony\Component\Security\Core\User\UserInterface')
+            );
+
+        $provider = new EntityUserProvider(
+            $this->getManager($this->getObjectManager($repository)),
+            'Symfony\Bridge\Doctrine\Tests\Fixtures\User'
+        );
+
+        $provider->loadUserByUsername('name');
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testLoadUserByUserNameShouldDeclineInvalidInterface()
+    {
+        $repository = $this->getMock('\Symfony\Component\Security\Core\User\AdvancedUserInterface');
+
+        $provider = new EntityUserProvider(
+            $this->getManager($this->getObjectManager($repository)),
+            'Symfony\Bridge\Doctrine\Tests\Fixtures\User'
+        );
+
+        $provider->loadUserByUsername('name');
+    }
+
     private function getManager($em, $name = null)
     {
         $manager = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
-        $manager->expects($this->once())
+        $manager->expects($this->any())
             ->method('getManager')
             ->with($this->equalTo($name))
             ->will($this->returnValue($em));
 
         return $manager;
+    }
+
+    private function getObjectManager($repository)
+    {
+        $em = $this->getMockBuilder('\Doctrine\Common\Persistence\ObjectManager')
+            ->setMethods(array('getClassMetadata', 'getRepository'))
+            ->getMockForAbstractClass();
+        $em->expects($this->any())
+            ->method('getRepository')
+            ->willReturn($repository);
+
+        return $em;
     }
 
     private function createSchema($em)

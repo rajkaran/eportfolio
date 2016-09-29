@@ -81,10 +81,7 @@ class NativeRequestHandler implements RequestHandlerInterface
             // Mark the form with an error if the uploaded size was too large
             // This is done here and not in FormValidator because $_POST is
             // empty when that error occurs. Hence the form is never submitted.
-            $contentLength = $this->serverParams->getContentLength();
-            $maxContentLength = $this->serverParams->getPostMaxSize();
-
-            if (!empty($maxContentLength) && $contentLength > $maxContentLength) {
+            if ($this->serverParams->hasPostMaxSizeBeenExceeded()) {
                 // Submit the form, but don't clear the default values
                 $form->submit(null, false);
 
@@ -98,8 +95,8 @@ class NativeRequestHandler implements RequestHandlerInterface
             }
 
             $fixedFiles = array();
-            foreach ($_FILES as $name => $file) {
-                $fixedFiles[$name] = self::stripEmptyFiles(self::fixPhpFilesArray($file));
+            foreach ($_FILES as $fileKey => $file) {
+                $fixedFiles[$fileKey] = self::stripEmptyFiles(self::fixPhpFilesArray($file));
             }
 
             if ('' === $name) {
@@ -132,7 +129,7 @@ class NativeRequestHandler implements RequestHandlerInterface
     /**
      * Returns the method used to submit the request to the server.
      *
-     * @return string The request method.
+     * @return string The request method
      */
     private static function getRequestMethod()
     {
@@ -159,7 +156,7 @@ class NativeRequestHandler implements RequestHandlerInterface
      * It's safe to pass an already converted array, in which case this method
      * just returns the original array unmodified.
      *
-     * This method is identical to {@link Symfony\Component\HttpFoundation\FileBag::fixPhpFilesArray}
+     * This method is identical to {@link \Symfony\Component\HttpFoundation\FileBag::fixPhpFilesArray}
      * and should be kept as such in order to port fixes quickly and easily.
      *
      * @param array $data
@@ -184,10 +181,10 @@ class NativeRequestHandler implements RequestHandlerInterface
             unset($files[$k]);
         }
 
-        foreach (array_keys($data['name']) as $key) {
+        foreach ($data['name'] as $key => $name) {
             $files[$key] = self::fixPhpFilesArray(array(
                 'error' => $data['error'][$key],
-                'name' => $data['name'][$key],
+                'name' => $name,
                 'type' => $data['type'][$key],
                 'tmp_name' => $data['tmp_name'][$key],
                 'size' => $data['size'][$key],
@@ -200,9 +197,9 @@ class NativeRequestHandler implements RequestHandlerInterface
     /**
      * Sets empty uploaded files to NULL in the given uploaded files array.
      *
-     * @param mixed $data The file upload data.
+     * @param mixed $data The file upload data
      *
-     * @return array|null Returns the stripped upload data.
+     * @return array|null Returns the stripped upload data
      */
     private static function stripEmptyFiles($data)
     {

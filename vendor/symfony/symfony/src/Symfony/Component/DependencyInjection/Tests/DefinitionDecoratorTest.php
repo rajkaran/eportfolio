@@ -43,9 +43,7 @@ class DefinitionDecoratorTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array('class', 'class'),
-            array('factoryClass', 'factory_class'),
-            array('factoryMethod', 'factory_method'),
-            array('factoryService', 'factory_service'),
+            array('factory', 'factory'),
             array('configurator', 'configurator'),
             array('file', 'file'),
         );
@@ -69,6 +67,16 @@ class DefinitionDecoratorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($def, $def->setLazy(false));
         $this->assertFalse($def->isLazy());
         $this->assertEquals(array('lazy' => true), $def->getChanges());
+    }
+
+    public function testSetAutowired()
+    {
+        $def = new DefinitionDecorator('foo');
+
+        $this->assertFalse($def->isAutowired());
+        $this->assertSame($def, $def->setAutowired(false));
+        $this->assertFalse($def->isAutowired());
+        $this->assertEquals(array('autowire' => true), $def->getChanges());
     }
 
     public function testSetArgument()

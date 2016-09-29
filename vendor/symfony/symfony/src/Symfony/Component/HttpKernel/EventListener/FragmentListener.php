@@ -16,7 +16,6 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\UriSigner;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -62,7 +61,14 @@ class FragmentListener implements EventSubscriberInterface
             return;
         }
 
-        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
+        if ($request->attributes->has('_controller')) {
+            // Is a sub-request: no need to parse _path but it should still be removed from query parameters as below.
+            $request->query->remove('_path');
+
+            return;
+        }
+
+        if ($event->isMasterRequest()) {
             $this->validateRequest($request);
         }
 
@@ -86,16 +92,6 @@ class FragmentListener implements EventSubscriberInterface
         }
 
         throw new AccessDeniedHttpException();
-    }
-
-    /**
-     * @deprecated Deprecated since 2.3.19, to be removed in 3.0.
-     *
-     * @return string[]
-     */
-    protected function getLocalIpAddresses()
-    {
-        return array('127.0.0.1', 'fe80::1', '::1');
     }
 
     public static function getSubscribedEvents()

@@ -33,16 +33,16 @@ class ExprBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertFinalizedValueIs('new_value', $test, array('key' => true));
 
         $test = $this->getTestBuilder()
-            ->ifTrue( function ($v) { return true; })
+            ->ifTrue(function ($v) { return true; })
             ->then($this->returnClosure('new_value'))
         ->end();
         $this->assertFinalizedValueIs('new_value', $test);
 
         $test = $this->getTestBuilder()
-            ->ifTrue( function ($v) { return false; })
+            ->ifTrue(function ($v) { return false; })
             ->then($this->returnClosure('new_value'))
         ->end();
-        $this->assertFinalizedValueIs('value',$test);
+        $this->assertFinalizedValueIs('value', $test);
     }
 
     public function testIfStringExpression()
@@ -114,7 +114,7 @@ class ExprBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertFinalizedValueIs('new_value', $test);
 
         $test = $this->getTestBuilder()
-            ->ifNotInArray(array('foo', 'bar', 'value_from_config' ))
+            ->ifNotInArray(array('foo', 'bar', 'value_from_config'))
             ->then($this->returnClosure('new_value'))
         ->end();
         $this->assertFinalizedValueIs('new_value', $test);
@@ -151,7 +151,28 @@ class ExprBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Create a test treebuilder with a variable node, and init the validation
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage You must specify an if part.
+     */
+    public function testEndIfPartNotSpecified()
+    {
+        $this->getTestBuilder()->end();
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage You must specify a then part.
+     */
+    public function testEndThenPartNotSpecified()
+    {
+        $builder = $this->getTestBuilder();
+        $builder->ifPart = 'test';
+        $builder->end();
+    }
+
+    /**
+     * Create a test treebuilder with a variable node, and init the validation.
+     *
      * @return TreeBuilder
      */
     protected function getTestBuilder()
@@ -163,14 +184,16 @@ class ExprBuilderTest extends \PHPUnit_Framework_TestCase
             ->children()
             ->variableNode('key')
             ->validate()
-       ;
+        ;
     }
 
     /**
-     * Close the validation process and finalize with the given config
+     * Close the validation process and finalize with the given config.
+     *
      * @param TreeBuilder $testBuilder The tree builder to finalize
      * @param array       $config      The config you want to use for the finalization, if nothing provided
-     *                       a simple array('key'=>'value') will be used
+     *                                 a simple array('key'=>'value') will be used
+     *
      * @return array The finalized config values
      */
     protected function finalizeTestBuilder($testBuilder, $config = null)
@@ -185,9 +208,11 @@ class ExprBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Return a closure that will return the given value
-     * @param $val The value that the closure must return
-     * @return Closure
+     * Return a closure that will return the given value.
+     *
+     * @param mixed $val The value that the closure must return
+     *
+     * @return \Closure
      */
     protected function returnClosure($val)
     {
@@ -197,7 +222,7 @@ class ExprBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Assert that the given test builder, will return the given value
+     * Assert that the given test builder, will return the given value.
      *
      * @param mixed       $value       The value to test
      * @param TreeBuilder $treeBuilder The tree builder to finalize

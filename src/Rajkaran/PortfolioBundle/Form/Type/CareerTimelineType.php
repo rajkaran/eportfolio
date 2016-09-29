@@ -7,43 +7,45 @@ namespace Rajkaran\PortfolioBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Ivory\CKEditorBundle\Form\Type\CKEditorType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class CareerTimelineType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-		
-		$builder->setMethod('POST');
-		
-		$builder->add('projectName', 'text');
-		
-		$builder->add('alias', 'text');
-		
-		$builder->add('developedWhen', 'date',
-			array(
-				'widget' => 'single_text'
-			)
-		);
-		
-        $builder->add('description', 'ckeditor');
-		
-		$builder->add('feature', 'ckeditor');
-		
-		$builder->add('technology', 'ckeditor');
-		
-		$builder->add('developmentPeriod', 'text');
-		
-		$builder->add('developmentAim', 'text');
-		
-		$builder->add('developFor', 'choice', 
-			array(
-				'choices'   => array('academic' => 'Academic', 'work' => 'Work', 'personnel' => 'Personnel'),
-				'required'  => true,
-			)
-		);
-		
-		$builder->add('save', 'submit', array('label' => 'Submit'));
-		
+
+    		$builder->setMethod('POST');
+
+    		$builder->add('projectName', TextType::class);
+
+    		$builder->add('alias', TextType::class);
+
+    		$builder->add('developedWhen', DateType::class, array( 'widget' => 'single_text' ));
+
+        $builder->add('description', CKEditorType::class);
+
+    		$builder->add('feature', CKEditorType::class);
+
+    		$builder->add('technology', CKEditorType::class);
+
+    		$builder->add('developmentPeriod', TextType::class);
+
+    		$builder->add('developmentAim', TextType::class);
+
+    		$builder->add('developFor', ChoiceType::class,
+    			array(
+    				'choices'   => array('academic' => 'Academic', 'work' => 'Work', 'personnel' => 'Personnel'),
+    				'required'  => true,
+    			)
+    		);
+
+    		$builder->add('save', SubmitType::class, array('label' => 'Submit'));
+
     }
 
     /*public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -57,8 +59,8 @@ class CareerTimelineType extends AbstractType
     {
         return 'careerTimeline';
     }
-	
-	
-	
-	
+
+
+
+
 }

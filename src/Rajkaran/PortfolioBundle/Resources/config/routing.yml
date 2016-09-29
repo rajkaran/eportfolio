@@ -3,7 +3,7 @@ login:
     defaults: { _controller: RajkaranPortfolioBundle:Security:login }
 
 login_check:
-    pattern:   /login_check
+    path:   /login_check
 
 account_register:
     path:     /register
@@ -17,18 +17,18 @@ logout:
     path:   /logout
 
 admin:
-    pattern: /admin
-    defaults: 
+    path: /admin
+    defaults:
         _controller: FrameworkBundle:Redirect:urlRedirect
         path: /admin/home
         permanent: true
 
 admin_home:
-    pattern: /admin/home
+    path: /admin/home
     defaults: {_controller: RajkaranPortfolioBundle:BackEnd:home }
 
 admin_career_timeline:
-    pattern: /admin/careerTimeline
+    path: /admin/careerTimeline
     defaults: {_controller: RajkaranPortfolioBundle:BackEnd:careerTimeline }
 
 project:
@@ -36,16 +36,15 @@ project:
     defaults:  { _controller: RajkaranPortfolioBundle:BackEnd:project }
 
 admin_about_me:
-    pattern: /admin/aboutMe
+    path: /admin/aboutMe
     defaults: {_controller: RajkaranPortfolioBundle:BackEnd:aboutMe }
 
 home:
-    pattern: /
+    path: /
     defaults: {_controller: RajkaranPortfolioBundle:FrontEnd:home }
 
 career_timeline:
-    pattern: /timeline
+    path: /timeline
     defaults: {_controller: RajkaranPortfolioBundle:FrontEnd:careerTimeline }
     options:
         expose: true
-

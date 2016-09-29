@@ -13,7 +13,6 @@ namespace Symfony\Bundle\FrameworkBundle\Tests\Templating;
 
 use Symfony\Bundle\FrameworkBundle\Templating\TimedPhpEngine;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Templating\TemplateNameParser;
 use Symfony\Bundle\FrameworkBundle\Templating\GlobalVariables;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 
@@ -41,7 +40,7 @@ class TimedPhpEngineTest extends TestCase
     }
 
     /**
-     * @return \Symfony\Component\DependencyInjection\Container
+     * @return Container
      */
     private function getContainer()
     {
@@ -63,7 +62,7 @@ class TimedPhpEngineTest extends TestCase
     }
 
     /**
-     * @return \Symfony\Bundle\FrameworkBundle\Templating\GlobalVariables
+     * @return GlobalVariables
      */
     private function getGlobalVariables()
     {

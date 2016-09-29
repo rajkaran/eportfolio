@@ -10,37 +10,40 @@ use Rajkaran\PortfolioBundle\Entity\Home;
 use Rajkaran\PortfolioBundle\Entity\CareerTimeline;
 use Rajkaran\PortfolioBundle\Entity\AboutMe;
 use Symfony\Component\HttpFoundation\Request;
+use Rajkaran\PortfolioBundle\Form\Type\HomeType;
+use Rajkaran\PortfolioBundle\Form\Type\AboutMeType;
+use Rajkaran\PortfolioBundle\Form\Type\CareerTimelineType;
 
 class BackEndController extends Controller {
-    
+
 	public function aboutMeAction(Request $request) {
-		
+
 		//$hash = password_hash('n01d@Indi@', PASSWORD_BCRYPT, array("cost" => 12));
 		//echo $hash;
-		
+
 		$projects = $this->getDoctrine()
 			->getRepository('RajkaranPortfolioBundle:CareerTimeline')
 			->findAllProjects();
-		
+
 		$aboutMeContent = $this->getDoctrine()
 			->getRepository('RajkaranPortfolioBundle:AboutMe')
 			->findFirstRowOfAboutMe();
-		
+
 		$aboutMe = new AboutMe();
-		
+
 		if ($aboutMeContent) {
 			$aboutMe->setDetail( $aboutMeContent[0]->getDetail() );
 		}
-		
-        $form = $this->createForm('aboutMe', $aboutMe);
-			
+
+        $form = $this->createForm(AboutMeType::class, $aboutMe);
+
 		$form->handleRequest($request);
 
 		if ($form->isValid()) {
-			
+
 			$em = $this->getDoctrine()->getManager();
 			$rowToUpdate = $em->getRepository('RajkaranPortfolioBundle:AboutMe')->findFirstRowOfAboutMe();
-			
+
 			if ($rowToUpdate) {
 				$rowToUpdate[0]->setDetail( $form->get('detail')->getData() );
 			}
@@ -48,7 +51,7 @@ class BackEndController extends Controller {
 				$em = $this->getDoctrine()->getManager();
 				$em->persist($aboutMe);
 			}
-			
+
 			$em->flush();
 
 			return $this->redirect($this->generateUrl('admin_about_me'));
@@ -57,48 +60,48 @@ class BackEndController extends Controller {
         return $this->render('RajkaranPortfolioBundle:Admin:aboutMe.html.twig', array(
             'form' => $form->createView(), 'projects'=> $projects )
 		);
-		
+
     }
-	
+
 	public function careerTimelineAction(Request $request) {
-		
+
 		$projects = $this->getDoctrine()
 			->getRepository('RajkaranPortfolioBundle:CareerTimeline')
 			->findAllProjects();
-		
-		
+
+
 		$careerTimeline = new CareerTimeline();
-		
-        $form = $this->createForm('careerTimeline', $careerTimeline);
+
+        $form = $this->createForm(CareerTimelineType::class, $careerTimeline);
 
 		$form->handleRequest($request);
 
 		if ($form->isValid()) {
-			
+
 			$em = $this->getDoctrine()->getManager();
 			$em->persist($careerTimeline);
 			$em->flush();
 
 			return $this->redirect($this->generateUrl('admin_career_timeline'));
 		}
-		
+
 		return $this->render('RajkaranPortfolioBundle:Admin:careerTimeline.html.twig', array(
             'form' => $form->createView(), 'projects'=> $projects)
 		);
     }
-	
+
 	public function projectAction(Request $request, $project) {
-		
+
 		$projects = $this->getDoctrine()
 			->getRepository('RajkaranPortfolioBundle:CareerTimeline')
 			->findAllProjects();
-		
+
 		$projectContent = $this->getDoctrine()
 			->getRepository('RajkaranPortfolioBundle:CareerTimeline')
 			->findProjectByName($project);
-		
+
 		$careerTimeline = new CareerTimeline();
-		
+
 		if ($projectContent) {
 			$careerTimeline->setProjectName( $projectContent[0]->getProjectName() );
 			$careerTimeline->setAlias( $projectContent[0]->getAlias() );
@@ -110,16 +113,16 @@ class BackEndController extends Controller {
 			$careerTimeline->setDevelopmentAim( $projectContent[0]->getDevelopmentAim() );
 			$careerTimeline->setDevelopFor( $projectContent[0]->getDevelopFor() );
 		}
-		
+
         $form = $this->createForm('careerTimeline', $careerTimeline);
-			
+
 		$form->handleRequest($request);
 
 		if ($form->isValid()) {
-			
+
 			$em = $this->getDoctrine()->getManager();
 			$rowToUpdate = $em->getRepository('RajkaranPortfolioBundle:CareerTimeline')->findProjectByName($project);
-			
+
 			if ($rowToUpdate) {
 				$rowToUpdate[0]->setProjectName( $form->get('projectName')->getData() );
 				$rowToUpdate[0]->setAlias( $form->get('alias')->getData() );
@@ -135,47 +138,47 @@ class BackEndController extends Controller {
 				$em = $this->getDoctrine()->getManager();
 				$em->persist($home);
 			}
-			
+
 			$em->flush();
-			
+
 			$projectName = $form->get('projectName')->getData();
 
 			return $this->redirect($this->generateUrl('admin_career_timeline').'/'.$projectName);
 		}
-		
+
 		return $this->render('RajkaranPortfolioBundle:Admin:careerTimeline.html.twig', array(
             'form' => $form->createView(), 'projects'=> $projects)
 		);
-		
+
     }
-	
+
 	public function homeAction(Request $request){
-        
+
 		$projects = $this->getDoctrine()
 			->getRepository('RajkaranPortfolioBundle:CareerTimeline')
 			->findAllProjects();
-		
+
 		$homeContent = $this->getDoctrine()
 			->getRepository('RajkaranPortfolioBundle:Home')
 			->findFirstRowOfHome();
-		
+
 		$home = new Home();
-		
+
 		if ($homeContent) {
 			$home->setScreenName( $homeContent[0]->getScreenName() );
 			$home->setImageName( $homeContent[0]->getImageName() );
 			$home->setTagLine( $homeContent[0]->getTagLine() );
 		}
-		
-        $form = $this->createForm('home', $home);
-			
+
+        $form = $this->createForm(HomeType::class, $home);
+
 		$form->handleRequest($request);
 
 		if ($form->isValid()) {
-			
+
 			$em = $this->getDoctrine()->getManager();
 			$rowToUpdate = $em->getRepository('RajkaranPortfolioBundle:Home')->findFirstRowOfHome();
-			
+
 			if ($rowToUpdate) {
 				$rowToUpdate[0]->setScreenName( $form->get('screenName')->getData() );
 				$rowToUpdate[0]->setImageName( $form->get('imageName')->getData() );
@@ -185,7 +188,7 @@ class BackEndController extends Controller {
 				$em = $this->getDoctrine()->getManager();
 				$em->persist($home);
 			}
-			
+
 			$em->flush();
 
 			return $this->redirect($this->generateUrl('admin_home'));
@@ -195,7 +198,7 @@ class BackEndController extends Controller {
             'form' => $form->createView(), 'projects'=> $projects )
 		);
     }
-	
-	
-	
+
+
+
 }

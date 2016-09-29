@@ -11,26 +11,50 @@
 
 namespace Symfony\Component\Form\Tests\Extension\Validator\Type;
 
+use Symfony\Component\Form\Extension\Validator\Type\FormTypeValidatorExtension;
+use Symfony\Component\Validator\Constraints\Valid;
+use Symfony\Component\Validator\ConstraintViolationList;
+
 class FormTypeValidatorExtensionTest extends BaseValidatorExtensionTest
 {
     public function testSubmitValidatesData()
     {
-        $builder = $this->factory->createBuilder('form', null, array(
-            'validation_groups' => 'group',
-        ));
-        $builder->add('firstName', 'form');
+        $builder = $this->factory->createBuilder(
+            'Symfony\Component\Form\Extension\Core\Type\FormType',
+            null,
+            array(
+                'validation_groups' => 'group',
+            )
+        );
+        $builder->add('firstName', 'Symfony\Component\Form\Extension\Core\Type\FormType');
         $form = $builder->getForm();
 
         $this->validator->expects($this->once())
             ->method('validate')
-            ->with($this->equalTo($form));
+            ->with($this->equalTo($form))
+            ->will($this->returnValue(new ConstraintViolationList()));
 
         // specific data is irrelevant
         $form->submit(array());
     }
 
+    public function testValidConstraint()
+    {
+        $form = $this->createForm(array('constraints' => $valid = new Valid()));
+
+        $this->assertSame(array($valid), $form->getConfig()->getOption('constraints'));
+    }
+
+    public function testValidatorInterface()
+    {
+        $validator = $this->getMock('Symfony\Component\Validator\Validator\ValidatorInterface');
+
+        $formTypeValidatorExtension = new FormTypeValidatorExtension($validator);
+        $this->assertAttributeSame($validator, 'validator', $formTypeValidatorExtension);
+    }
+
     protected function createForm(array $options = array())
     {
-        return $this->factory->create('form', null, $options);
+        return $this->factory->create('Symfony\Component\Form\Extension\Core\Type\FormType', null, $options);
     }
 }

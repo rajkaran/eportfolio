@@ -2,12 +2,12 @@
 
 /*
  * This file is part of the Symfony package.
-*
-* (c) Fabien Potencier <fabien@symfony.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Symfony\Bridge\Doctrine\Tests\DependencyInjection\CompilerPass;
 
@@ -17,15 +17,8 @@ use Symfony\Component\DependencyInjection\Definition;
 
 class RegisterEventListenersAndSubscribersPassTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        if (!class_exists('Symfony\Component\DependencyInjection\Container')) {
-            $this->markTestSkipped('The "DependencyInjection" component is not available');
-        }
-    }
-
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testExceptionOnAbstractTaggedSubscriber()
     {
@@ -41,7 +34,7 @@ class RegisterEventListenersAndSubscribersPassTest extends \PHPUnit_Framework_Te
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testExceptionOnAbstractTaggedListener()
     {
@@ -146,6 +139,17 @@ class RegisterEventListenersAndSubscribersPassTest extends \PHPUnit_Framework_Te
         $this->assertEquals(array('b', 'a'), $serviceOrder);
     }
 
+    public function testProcessNoTaggedServices()
+    {
+        $container = $this->createBuilder(true);
+
+        $this->process($container);
+
+        $this->assertEquals(array(), $container->getDefinition('doctrine.dbal.default_connection.event_manager')->getMethodCalls());
+
+        $this->assertEquals(array(), $container->getDefinition('doctrine.dbal.second_connection.event_manager')->getMethodCalls());
+    }
+
     private function process(ContainerBuilder $container)
     {
         $pass = new RegisterEventListenersAndSubscribersPass('doctrine.connections', 'doctrine.dbal.%s_connection.event_manager', 'doctrine');
@@ -155,8 +159,7 @@ class RegisterEventListenersAndSubscribersPassTest extends \PHPUnit_Framework_Te
     private function getServiceOrder(ContainerBuilder $container, $method)
     {
         $order = array();
-        foreach ($container->getDefinition('doctrine.dbal.default_connection.event_manager')->getMethodCalls() as $call) {
-            list($name, $arguments) = $call;
+        foreach ($container->getDefinition('doctrine.dbal.default_connection.event_manager')->getMethodCalls() as list($name, $arguments)) {
             if ($method !== $name) {
                 continue;
             }
