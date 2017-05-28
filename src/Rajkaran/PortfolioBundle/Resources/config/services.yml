@@ -1,3 +1,8 @@
-
 services:
-    
+    helper:
+        class:       Rajkaran\PortfolioBundle\Services\HelperService
+        arguments:   ['@doctrine']
+
+    timeline:
+        class:       Rajkaran\PortfolioBundle\Services\CareerTimelineService
+        arguments:   ['@doctrine', '@helper']

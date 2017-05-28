@@ -17,8 +17,9 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Rajkaran\PortfolioBundle\RajkaranPortfolioBundle(),
-			      new JMS\SerializerBundle\JMSSerializerBundle(),
+			new JMS\SerializerBundle\JMSSerializerBundle(),
             new Ivory\CKEditorBundle\IvoryCKEditorBundle(),
+            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
@@ -50,10 +51,16 @@ class AppKernel extends Kernel
         return dirname(__DIR__).'/var/logs';
     }
 
-	  public function init()
+	public function init()
     {
         date_default_timezone_set( 'America/Toronto' );
         parent::init();
+    }
+
+    public function __construct($environment, $debug)
+    {
+        date_default_timezone_set( 'America/Toronto' );
+        parent::__construct($environment, $debug);
     }
 
 }

@@ -1,10 +1,4 @@
-{% extends 'RajkaranPortfolioBundle:Admin:adminTemplate.html.twig' %}
-
-{% block title %}Administrator | About Me{% endblock %}
-
-{% block styleSheetPageSpecific %}
-	<link rel="stylesheet" href="{{ asset('bundles/rajkaranportfolio/css/admin.css') }}" />
-{% endblock %}
+{% extends 'RajkaranPortfolioBundle:Admin:admin.html.twig' %}
 
 {% block pageContent %}
 
@@ -14,12 +8,12 @@
 			<fieldset>
 				<div class="row">
 					{% if form_errors(form.detail)%}
-						<div class="alert alert-danger" role="alert"> 
+						<div class="alert alert-danger" role="alert">
 							{{ ['Text About Me: ', form_errors(form.detail)|replace({'<ul><li>': '', '</li></ul>': ''})]|join }}
 						</div>
 					{%endif%}
 				</div>
-				
+
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="form-group">
@@ -37,6 +31,5 @@
 			</fieldset>
 		{{ form_end(form) }}
 	</div>
-	
-{% endblock %}
 
+{% endblock %}

@@ -24,7 +24,8 @@
         "incenteev/composer-parameter-handler": "^2.0",
         "jms/serializer-bundle": "~1.1.0",
         "ircmaxell/password-compat": "~1.0",
-        "egeloen/ckeditor-bundle": "^4.0"
+        "egeloen/ckeditor-bundle": "^4.0",
+        "friendsofsymfony/jsrouting-bundle": "dev-master"
     },
     "scripts": {
         "post-install-cmd": [

@@ -27,7 +27,7 @@ class CareerTimelineType extends AbstractType
 
     		$builder->add('developedWhen', DateType::class, array( 'widget' => 'single_text' ));
 
-        $builder->add('description', CKEditorType::class);
+            $builder->add('description', CKEditorType::class);
 
     		$builder->add('feature', CKEditorType::class);
 
@@ -39,7 +39,29 @@ class CareerTimelineType extends AbstractType
 
     		$builder->add('developFor', ChoiceType::class,
     			array(
-    				'choices'   => array('academic' => 'Academic', 'work' => 'Work', 'personnel' => 'Personnel'),
+    				'choices'   => array('Academic' => 'academic', 'Work' => 'work', 'Personnel' => 'personnel'),
+    				'required'  => true,
+    			)
+    		);
+
+            $builder->add('icon', ChoiceType::class,
+    			array(
+    				'choices'   => array('University' => 'university', 'Innovation' => 'lightbulb-o', 'Work' => 'building-o'),
+    				'required'  => true,
+    			)
+    		);
+
+            $builder->add('tooltip', ChoiceType::class,
+    			array(
+    				'choices'   => array('Academic builds' => 'Academic builds', 'Creative builds' => 'Creative builds'
+                    , 'Commercial builds' => 'Commercial builds'),
+    				'required'  => true,
+    			)
+    		);
+
+            $builder->add('cssClass', ChoiceType::class,
+    			array(
+    				'choices'   => array('Red' => 'warning', 'Light blue' => 'info', 'Green' => 'success'),
     				'required'  => true,
     			)
     		);

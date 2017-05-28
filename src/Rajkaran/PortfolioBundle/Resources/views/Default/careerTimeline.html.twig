@@ -1,0 +1,70 @@
+{% extends 'RajkaranPortfolioBundle:Default:layout.html.twig' %}
+
+{% block title %}RajKaran - portfolio{% endblock %}
+
+{% block page %}
+
+
+
+<section id="wrapper">
+
+    <!-- Sidebar -->
+    <nav id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <li class="sidebar-brand">
+                <a class="navbar-brand" href="{{ path('home') }}">
+                    <!-- <img class="center-block" src="{{ asset('bundles/rajkaranportfolio/concat/images/logo.svg') }}" alt="Raj Karan" height="50px" /> -->
+                    <div><span class="glyphicon glyphicon-home" aria-hidden="true"></span> <span>Rajkaran</span></div>
+				</a>
+            </li>
+
+            {% for project in list %}
+            <li {% if project.alias == detail.alias %} class="active" {% endif %} >
+                <a href="{{ path('fe_project', {'project': project.alias}) }}">
+                    <span class="fa fa-{{project.icon}} icon" ></span>
+                    <span >{{project.alias}}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <section id="page-content-wrapper">
+        <div class="container-fluid" >
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="thumbnail thumbnail-{#{detail.cssClass}#}">
+                        <div class="row ">
+                            <div class="col-xs-1">
+                                <a href="#menu-toggle" class="btn-default" id="menu-toggle">
+                                    <span class="glyphicon glyphicon-align-justify toggle" aria-hidden="true"></span>
+                                </a>
+                            </div>
+
+                            <div class="col-xs-11 text-center project-name">
+                                {{detail.alias}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <article class="row">
+                <div class="col-xs-12">
+                    <p>{{detail.description|raw}}</p>
+                    <h3>Feature List : </h3>
+                    <p>{{detail.feature|raw}}</p>
+                    <h3>Technologies used : </h3>
+                    <p>{{detail.technology|raw}}</p>
+                </div>
+            </article>
+        </div>
+    </section>
+    <!-- /#page-content-wrapper -->
+
+</section>
+<!-- /#wrapper -->
+
+{% endblock %}

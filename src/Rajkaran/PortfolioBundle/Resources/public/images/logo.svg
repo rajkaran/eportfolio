@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg id="SvgjsSvg1001" width="290" height="540" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
+      xmlns:svgjs="http://svgjs.com/svgjs">
+    <defs id="SvgjsDefs1002"></defs>
+    <path id="SvgjsPath1008" d="M30 260L30 60C30 30 60 30 60 30L230 30C260 30 260 30 230 90L150 260L120 260L200 90C220 50 210 60 170 60L90 60C60 60 60 60 60 90L60 260L30 260 "
+        fill="#aebd38"></path>
+    <path id="SvgjsPath1009" d="M30 510L30 285L60 285L60 510 " fill="#598234"></path>
+    <path id="SvgjsPath1010" d="M230 510L120 285L150 285L260 510 " fill="#598234"></path>
+    <path id="SvgjsPath1011" d="M70 265L110 265L110 285L70 285 " fill="#505160"></path>
+</svg>

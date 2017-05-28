@@ -1,73 +1,67 @@
-{% extends 'RajkaranPortfolioBundle:Admin:adminTemplate.html.twig' %}
-
-{% block title %}Administrator | Careeer Timeline{% endblock %}
-
-{% block styleSheetPageSpecific %}
-	<link rel="stylesheet" href="{{ asset('bundles/rajkaranportfolio/css/admin.css') }}" />
-{% endblock %}
+{% extends 'RajkaranPortfolioBundle:Admin:admin.html.twig' %}
 
 {% block pageContent %}
-	
+
 	<div class="homeWrap">
 		<h3>Add new project to Timeline</h3>
 		{{ form_start(form) }}
 			<fieldset>
 				<div class="row">
 					{% if form_errors(form.projectName)%}
-						<div class="alert alert-danger" role="alert"> 
+						<div class="alert alert-danger" role="alert">
 							{{ ['Project Name: ', form_errors(form.projectName)|replace({'<ul><li>': '', '</li></ul>': ''})]|join }}
 						</div>
 					{%endif%}
-					
+
 					{% if form_errors(form.alias)%}
-						<div class="alert alert-danger" role="alert"> 
+						<div class="alert alert-danger" role="alert">
 							{{ ['Alias: ', form_errors(form.alias)|replace({'<ul><li>': '', '</li></ul>': ''})]|join }}
 						</div>
 					{%endif%}
-					
+
 					{% if form_errors(form.developedWhen)%}
-						<div class="alert alert-danger" role="alert"> 
+						<div class="alert alert-danger" role="alert">
 							{{ ['When this project has been developed?: ', form_errors(form.developedWhen)|replace({'<ul><li>': '', '</li></ul>': ''})]|join }}
 						</div>
 					{%endif%}
-					
+
 					{% if form_errors(form.description)%}
-						<div class="alert alert-danger" role="alert"> 
+						<div class="alert alert-danger" role="alert">
 							{{ ['Description: ', form_errors(form.description)|replace({'<ul><li>': '', '</li></ul>': ''})]|join }}
 						</div>
 					{%endif%}
-					
+
 					{% if form_errors(form.feature)%}
-						<div class="alert alert-danger" role="alert"> 
+						<div class="alert alert-danger" role="alert">
 							{{ ['Features: ', form_errors(form.feature)|replace({'<ul><li>': '', '</li></ul>': ''})]|join }}
 						</div>
 					{%endif%}
-					
+
 					{% if form_errors(form.technology)%}
-						<div class="alert alert-danger" role="alert"> 
+						<div class="alert alert-danger" role="alert">
 							{{ ['Technology: ', form_errors(form.technology)|replace({'<ul><li>': '', '</li></ul>': ''})]|join }}
 						</div>
 					{%endif%}
-					
+
 					{% if form_errors(form.developmentPeriod)%}
-						<div class="alert alert-danger" role="alert"> 
+						<div class="alert alert-danger" role="alert">
 							{{ ['Development Time period: ', form_errors(form.developmentPeriod)|replace({'<ul><li>': '', '</li></ul>': ''})]|join }}
 						</div>
 					{%endif%}
-					
+
 					{% if form_errors(form.developmentAim)%}
-						<div class="alert alert-danger" role="alert"> 
+						<div class="alert alert-danger" role="alert">
 							{{ ['Development Aim: ', form_errors(form.developmentAim)|replace({'<ul><li>': '', '</li></ul>': ''})]|join }}
 						</div>
 					{%endif%}
-					
+
 					{% if form_errors(form.developFor)%}
-						<div class="alert alert-danger" role="alert"> 
+						<div class="alert alert-danger" role="alert">
 							{{ ['Development purpose / for: ', form_errors(form.developFor)|replace({'<ul><li>': '', '</li></ul>': ''})]|join }}
 						</div>
 					{%endif%}
 				</div>
-				
+
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="form-group">
@@ -76,63 +70,84 @@
 								{{ form_widget(form.projectName, {'attr':{'class':'form-control', 'placeholder':'What is the project name?', 'autofocus':'autofocus'}}) }}
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_label(form.alias, 'Alias', { 'label_attr': {'class': 'input-group-addon'} }) }}
 								{{ form_widget(form.alias, {'attr':{'class':'form-control', 'placeholder':'What is the project name?', 'autofocus':'autofocus'}}) }}
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_label(form.developedWhen, 'When this project has been developed?', { 'label_attr': {'class': 'input-group-addon'} }) }}
 								{{ form_widget(form.developedWhen, {'attr':{'class':'form-control'}}) }}
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_label(form.description, 'Description', { 'label_attr': {'class': 'input-group-addon'} }) }}
 								{{ form_widget(form.description, {'attr':{'class':'form-control', 'rows':'3', 'placeholder':'Enter project summary'}}) }}
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_label(form.feature, 'Features', { 'label_attr': {'class': 'input-group-addon'} }) }}
 								{{ form_widget(form.feature, {'attr':{'class':'form-control', 'rows':'3', 'placeholder':'What were the features of application?'}}) }}
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_label(form.technology, 'Technology', { 'label_attr': {'class': 'input-group-addon'} }) }}
 								{{ form_widget(form.technology, {'attr':{'class':'form-control', 'rows':'3', 'placeholder':'What technologies were used?'}}) }}
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_label(form.developmentPeriod, 'Development Time period', { 'label_attr': {'class': 'input-group-addon'} }) }}
 								{{ form_widget(form.developmentPeriod, {'attr':{'class':'form-control', 'placeholder':'In which season it was developed?'}}) }}
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_label(form.developmentAim, 'Development Aim', { 'label_attr': {'class': 'input-group-addon'} }) }}
 								{{ form_widget(form.developmentAim, {'attr':{'class':'form-control', 'placeholder':'What was the development aim?'}}) }}
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_label(form.developFor, 'Development purpose / for', { 'label_attr': {'class': 'input-group-addon'} }) }}
 								{{ form_widget(form.developFor, {'attr':{'class':'form-control'}}) }}
 							</div>
 						</div>
-						
+
+						<div class="form-group">
+							<div class="input-group">
+								{{ form_label(form.icon, 'Choose font icon', { 'label_attr': {'class': 'input-group-addon'} }) }}
+								{{ form_widget(form.icon, {'attr':{'class':'form-control'}}) }}
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="input-group">
+								{{ form_label(form.tooltip, 'Tool tip text', { 'label_attr': {'class': 'input-group-addon'} }) }}
+								{{ form_widget(form.tooltip, {'attr':{'class':'form-control'}}) }}
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="input-group">
+								{{ form_label(form.cssClass, 'Bootstrap btn. class', { 'label_attr': {'class': 'input-group-addon'} }) }}
+								{{ form_widget(form.cssClass, {'attr':{'class':'form-control'}}) }}
+							</div>
+						</div>
+
 						<div class="form-group">
 							{{ form_widget(form.save, {'attr':{'class':'btn btn-lg btn-primary btn-block'}}) }}
 						</div>
@@ -141,6 +156,5 @@
 			</fieldset>
 		{{ form_end(form) }}
 	</div>
-	
-{% endblock %}
 
+{% endblock %}

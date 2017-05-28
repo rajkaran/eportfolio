@@ -35,7 +35,10 @@ class BackEndController extends Controller {
 			$aboutMe->setDetail( $aboutMeContent[0]->getDetail() );
 		}
 
-        $form = $this->createForm(AboutMeType::class, $aboutMe);
+        $form = $this->createForm(AboutMeType::class, $aboutMe, array(
+		    'action' => $this->generateUrl('admin_about_me'),
+		    'method' => 'POST',
+		));
 
 		$form->handleRequest($request);
 
@@ -58,7 +61,7 @@ class BackEndController extends Controller {
 		}
 
         return $this->render('RajkaranPortfolioBundle:Admin:aboutMe.html.twig', array(
-            'form' => $form->createView(), 'projects'=> $projects )
+            'form' => $form->createView(), 'projects'=> $projects, 'pageName' => 'Home')
 		);
 
     }
@@ -69,10 +72,12 @@ class BackEndController extends Controller {
 			->getRepository('RajkaranPortfolioBundle:CareerTimeline')
 			->findAllProjects();
 
-
 		$careerTimeline = new CareerTimeline();
 
-        $form = $this->createForm(CareerTimelineType::class, $careerTimeline);
+        $form = $this->createForm(CareerTimelineType::class, $careerTimeline, array(
+		    'action' => $this->generateUrl('admin_career_timeline'),
+		    'method' => 'POST',
+		));
 
 		$form->handleRequest($request);
 
@@ -86,7 +91,7 @@ class BackEndController extends Controller {
 		}
 
 		return $this->render('RajkaranPortfolioBundle:Admin:careerTimeline.html.twig', array(
-            'form' => $form->createView(), 'projects'=> $projects)
+            'form' => $form->createView(), 'projects'=> $projects, 'pageName' => 'Create New Project')
 		);
     }
 
@@ -96,25 +101,18 @@ class BackEndController extends Controller {
 			->getRepository('RajkaranPortfolioBundle:CareerTimeline')
 			->findAllProjects();
 
+			// echo "<pre>";
+			// \Doctrine\Common\Util\Debug::dump($project);
+			// echo "</pre>";
+
 		$projectContent = $this->getDoctrine()
 			->getRepository('RajkaranPortfolioBundle:CareerTimeline')
 			->findProjectByName($project);
 
-		$careerTimeline = new CareerTimeline();
-
-		if ($projectContent) {
-			$careerTimeline->setProjectName( $projectContent[0]->getProjectName() );
-			$careerTimeline->setAlias( $projectContent[0]->getAlias() );
-			$careerTimeline->setDevelopedWhen( $projectContent[0]->getDevelopedWhen() );
-			$careerTimeline->setDescription( $projectContent[0]->getDescription() );
-			$careerTimeline->setFeature( $projectContent[0]->getFeature() );
-			$careerTimeline->setTechnology( $projectContent[0]->getTechnology() );
-			$careerTimeline->setDevelopmentPeriod( $projectContent[0]->getDevelopmentPeriod() );
-			$careerTimeline->setDevelopmentAim( $projectContent[0]->getDevelopmentAim() );
-			$careerTimeline->setDevelopFor( $projectContent[0]->getDevelopFor() );
-		}
-
-        $form = $this->createForm('careerTimeline', $careerTimeline);
+		$form = $this->createForm(CareerTimelineType::class, $projectContent[0], array(
+		    'action' => $this->generateUrl('project', array('project' => $projectContent[0]->getAlias()) ),
+		    'method' => 'POST',
+		));
 
 		$form->handleRequest($request);
 
@@ -140,14 +138,10 @@ class BackEndController extends Controller {
 			}
 
 			$em->flush();
-
-			$projectName = $form->get('projectName')->getData();
-
-			return $this->redirect($this->generateUrl('admin_career_timeline').'/'.$projectName);
 		}
 
 		return $this->render('RajkaranPortfolioBundle:Admin:careerTimeline.html.twig', array(
-            'form' => $form->createView(), 'projects'=> $projects)
+            'form' => $form->createView(), 'projects'=> $projects, 'pageName' => 'Project - '.$projectContent[0]->getProjectName())
 		);
 
     }
@@ -170,7 +164,10 @@ class BackEndController extends Controller {
 			$home->setTagLine( $homeContent[0]->getTagLine() );
 		}
 
-        $form = $this->createForm(HomeType::class, $home);
+        $form = $this->createForm(HomeType::class, $home, array(
+		    'action' => $this->generateUrl('admin_home'),
+		    'method' => 'POST',
+		));
 
 		$form->handleRequest($request);
 
@@ -195,7 +192,7 @@ class BackEndController extends Controller {
 		}
 
         return $this->render('RajkaranPortfolioBundle:Admin:home.html.twig', array(
-            'form' => $form->createView(), 'projects'=> $projects )
+            'form' => $form->createView(), 'projects'=> $projects, 'pageName' => 'Home' )
 		);
     }
 

@@ -3,6 +3,8 @@
 !var/logs/.gitkeep
 /app/config/parameters.yml
 /phpunit.xml
-/vendor/
-/web/bundles/
+vendor/
+web/bundles/
 .DS_Store
+bower_components/
+node_modules/

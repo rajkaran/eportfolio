@@ -20,7 +20,7 @@ class CareerTimeline {
      * @ORM\Column(name="projectName", type="string", length=100)
      */
     protected $projectName;
-	
+
 	 /**
      * @ORM\Column(name="alias", type="string", length=100)
      */
@@ -35,48 +35,61 @@ class CareerTimeline {
      * @ORM\Column(name="description", type="text")
      */
     protected $description;
-	
+
 	/**
      * @ORM\Column(name="feature", type="text")
      */
     protected $feature;
-	
+
 	/**
      * @ORM\Column(name="technology", type="text")
      */
     protected $technology;
-	
+
 	/**
      * @ORM\Column(name="developmentPeriod", type="text")
      */
     protected $developmentPeriod;
-	
+
 	/**
      * @ORM\Column(name="developmentAim", type="string", length=100)
      */
     protected $developmentAim;
-	
+
 	/**
      * @ORM\Column(name="developFor", type="string", length=150)
      */
     protected $developFor;
-	
-	
-	
-	
-	
-	
-	
+
+    /**
+     * @ORM\Column(name="icon", type="string", length=30)
+     */
+    protected $icon;
+
+    /**
+     * @ORM\Column(name="tooltip", type="string", length=30)
+     */
+    protected $tooltip;
+
+    /**
+     * @ORM\Column(name="cssClass", type="string", length=50)
+     */
+    protected $cssClass;
 
 
 
 
-    
+
+
+
+
+
+
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -87,6 +100,7 @@ class CareerTimeline {
      * Set projectName
      *
      * @param string $projectName
+     *
      * @return CareerTimeline
      */
     public function setProjectName($projectName)
@@ -99,7 +113,7 @@ class CareerTimeline {
     /**
      * Get projectName
      *
-     * @return string 
+     * @return string
      */
     public function getProjectName()
     {
@@ -110,6 +124,7 @@ class CareerTimeline {
      * Set alias
      *
      * @param string $alias
+     *
      * @return CareerTimeline
      */
     public function setAlias($alias)
@@ -122,7 +137,7 @@ class CareerTimeline {
     /**
      * Get alias
      *
-     * @return string 
+     * @return string
      */
     public function getAlias()
     {
@@ -133,6 +148,7 @@ class CareerTimeline {
      * Set developedWhen
      *
      * @param \DateTime $developedWhen
+     *
      * @return CareerTimeline
      */
     public function setDevelopedWhen($developedWhen)
@@ -145,7 +161,7 @@ class CareerTimeline {
     /**
      * Get developedWhen
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDevelopedWhen()
     {
@@ -156,6 +172,7 @@ class CareerTimeline {
      * Set description
      *
      * @param string $description
+     *
      * @return CareerTimeline
      */
     public function setDescription($description)
@@ -168,7 +185,7 @@ class CareerTimeline {
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -179,6 +196,7 @@ class CareerTimeline {
      * Set feature
      *
      * @param string $feature
+     *
      * @return CareerTimeline
      */
     public function setFeature($feature)
@@ -191,7 +209,7 @@ class CareerTimeline {
     /**
      * Get feature
      *
-     * @return string 
+     * @return string
      */
     public function getFeature()
     {
@@ -202,6 +220,7 @@ class CareerTimeline {
      * Set technology
      *
      * @param string $technology
+     *
      * @return CareerTimeline
      */
     public function setTechnology($technology)
@@ -214,7 +233,7 @@ class CareerTimeline {
     /**
      * Get technology
      *
-     * @return string 
+     * @return string
      */
     public function getTechnology()
     {
@@ -225,6 +244,7 @@ class CareerTimeline {
      * Set developmentPeriod
      *
      * @param string $developmentPeriod
+     *
      * @return CareerTimeline
      */
     public function setDevelopmentPeriod($developmentPeriod)
@@ -237,7 +257,7 @@ class CareerTimeline {
     /**
      * Get developmentPeriod
      *
-     * @return string 
+     * @return string
      */
     public function getDevelopmentPeriod()
     {
@@ -248,6 +268,7 @@ class CareerTimeline {
      * Set developmentAim
      *
      * @param string $developmentAim
+     *
      * @return CareerTimeline
      */
     public function setDevelopmentAim($developmentAim)
@@ -260,7 +281,7 @@ class CareerTimeline {
     /**
      * Get developmentAim
      *
-     * @return string 
+     * @return string
      */
     public function getDevelopmentAim()
     {
@@ -271,6 +292,7 @@ class CareerTimeline {
      * Set developFor
      *
      * @param string $developFor
+     *
      * @return CareerTimeline
      */
     public function setDevelopFor($developFor)
@@ -283,10 +305,82 @@ class CareerTimeline {
     /**
      * Get developFor
      *
-     * @return string 
+     * @return string
      */
     public function getDevelopFor()
     {
         return $this->developFor;
+    }
+
+    /**
+     * Set icon
+     *
+     * @param string $icon
+     *
+     * @return CareerTimeline
+     */
+    public function setIcon($icon)
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    /**
+     * Get icon
+     *
+     * @return string
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    /**
+     * Set tooltip
+     *
+     * @param string $tooltip
+     *
+     * @return CareerTimeline
+     */
+    public function setTooltip($tooltip)
+    {
+        $this->tooltip = $tooltip;
+
+        return $this;
+    }
+
+    /**
+     * Get tooltip
+     *
+     * @return string
+     */
+    public function getTooltip()
+    {
+        return $this->tooltip;
+    }
+
+    /**
+     * Set cssClass
+     *
+     * @param string $cssClass
+     *
+     * @return CareerTimeline
+     */
+    public function setCssClass($cssClass)
+    {
+        $this->cssClass = $cssClass;
+
+        return $this;
+    }
+
+    /**
+     * Get cssClass
+     *
+     * @return string
+     */
+    public function getCssClass()
+    {
+        return $this->cssClass;
     }
 }

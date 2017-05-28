@@ -1,0 +1,115 @@
+{% extends 'RajkaranPortfolioBundle:Default:layout.html.twig' %}
+
+{% block title %}RajKaran - portfolio{% endblock %}
+
+{% block page %}
+    <header class="header section">
+        <section class="text-vertical-center" >
+            <div class="text-center" >
+                <!-- <div class="logo" >
+                    <img class="center-block" src="{{ asset('bundles/rajkaranportfolio/concat/images/logo.svg') }}" alt="Raj Karan" height="100px" />
+                </div> -->
+                <h1 class="name">
+                    {#{home[0].screenName}#}
+                    <!-- <span>ra;|&lt;aran</span> -->
+                    <span>Rajkaran</span>
+                </h1>
+                <div class="col-lg-8 col-lg-offset-2 tag">
+                    {{home[0].tagLine | raw}}
+                </div>
+            </div>
+        </section>
+    </header>
+
+    <section class="about-me container-fluid section">
+        <div class="row section-title"> <h2 class="col-lg-12">About Me</h2> </div>
+        <hr />
+        <div class="row">
+            <article class="col-sm-6 section-body text-justify">
+                {{aboutMe[0].detail | raw}}
+            </article>
+            <article class="col-sm-6 hidden-xs">
+                <img class="center-block img-responsive img-thumbnail"
+                    src="{{ asset('bundles/rajkaranportfolio/concat/images/me2.png') }}"  alt="Rajkaran picture" />
+            </article>
+        </div>
+    </section>
+
+    <section class="project container-fluid section">
+        <div class="row section-title"> <h2 class="col-lg-12">Projects</h2> </div>
+        <hr />
+        <div class="row">
+            <div id="owl-example" class="owl-carousel" data-project>
+                {% for project in projects %}
+                    <article class="thumbnail">
+                        <div class="header-icon btn-{{project.cssClass}}" data-toggle="tooltip" data-placement="bottom" title="{{project.tooltip}}">
+                            <span class="fa fa-{{project.icon}} " ></span>
+                        </div>
+                        <h3  class="text-center">
+                            <a href="{{ path('fe_project', {'project': project.alias}) }}" >{{project.alias}}</a>
+                        </h3>
+                        <p class="text-muted text-justify section-body">
+                            {{project.description}}<a href="{{ path('fe_project', {'project': project.alias}) }}" >read more</a>
+                        </p>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="contact container-fluid section" data-contact-me>
+        <div class="row section-title"> <h2 class="col-lg-12">Contact Me</h2> </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-12 cl-md-offset-2 col-lg-12 cl-lg-offset-3">
+                <div class="">
+                    <form>
+                        <div class="row" ng-show="enquiry.errorShow">
+                            <div class="col-md-12" >
+                                <div class="alert alert-success col-md-12" role="alert" data-ng-class="enquiry.errorStyle" >
+                                    <ul> <li ng-repeat="(key, value) in enquiry.error" data-ng-bind="value" ></li> </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" data-ng-class="enquiry.nameStyle">
+                                    <label for="name">Name</label>
+                                    <input type="text" class="form-control" id="name" placeholder="Enter name" required="required"
+                                        data-ng-model="enquiry.name" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <div class="input-group" data-ng-class="enquiry.emailStyle">
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+                                        <input type="email" class="form-control" id="email" placeholder="Enter email" required="required"
+                                            data-ng-model="enquiry.email" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" data-ng-class="enquiry.messageStyle">
+                                    <textarea name="message" id="message" class="form-control" rows="9" cols="25" required="required"
+                                        placeholder="Message" data-ng-model="enquiry.message" ></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary pull-right" id="btnContactUs" data-ng-disabled="enquiry.enableButton"
+                                    data-ng-click="submitEnquiry($event)" data-ng-bind="enquiry.buttonText">Send Message</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

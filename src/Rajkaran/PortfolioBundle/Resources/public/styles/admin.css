@@ -1,0 +1,12 @@
+.login .container-fluid{
+	margin-top:10%;
+}
+
+.login .container-fluid .col-centred{
+	float:none;
+}
+
+.login .profile-pic{
+	margin: 0 auto 10px;
+	display: block;
+}

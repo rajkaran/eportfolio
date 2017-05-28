@@ -2,91 +2,81 @@
 
 {% block title %}Log In{% endblock %}
 
-{% block styleSheet %}
-	<link rel="stylesheet" href="{{ asset('bundles/rajkaranportfolio/css/login.css') }}" />
-{% endblock %}
-
 {% block body %}
-	
-	<div class="container-fluid">
-	
-		<div class=" wrap row">
-			<div class="col-md-5 col-centred center-block">
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h2 class="panel-title"><Strong>Log In</strong></h2>
-					</div>
-					
-					<div class="panel-body">
-						<div class="error">
-							{% if error %}
-								<div>{{ error.message }}</div>
-							{% endif %}
+	<body class="login">
+		<div class="container-fluid">
+
+			<div class=" wrap row">
+				<div class="col-md-5 col-centred center-block">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h2 class="panel-title"><Strong>Log In</strong></h2>
 						</div>
-						
-						
-						<div class="formWrap">
-							<form action="{{ path('login_check') }}" method="post">
-								<fieldset>
-									<div class="row">
-										<div class="center-block  ">
-											<img class="img-circle profile-pic"
-												src="{{ asset('bundles/rajkaranportfolio/image/user.png') }}" alt="Raj Karan" />
-										</div>
-									</div>
-									
-									
-									<div class="row">
-										<div class="col-sm-12 col-md-10  col-md-offset-1 ">
-											<div class="form-group">
-												<div class="input-group">
-													<span class="input-group-addon">
-														<i class="glyphicon glyphicon-user"></i>
-													</span> 
-													<input class="form-control" placeholder="Username" id="username" name="_username" type="text" autofocus="autofocus" />
-												</div>
-											</div>
-											<div class="form-group">
-												<div class="input-group">
-													<span class="input-group-addon">
-														<i class="glyphicon glyphicon-lock"></i>
-													</span>
-													<input class="form-control" placeholder="Password" id="password" name="_password" type="password" />
-												</div>
-											</div>
-											<div class="form-group">
-												<input type="submit" class="btn btn-lg btn-primary btn-block" value="Log In" />
+
+						<div class="panel-body">
+							<div class="error">
+								{% if error %}
+									<div>{{ error.message }}</div>
+								{% endif %}
+							</div>
+
+
+							<div class="formWrap">
+								<form action="{{ path('login_check') }}" method="post">
+									<fieldset>
+										<div class="row">
+											<div class="center-block  ">
+												<img class="img-circle profile-pic"
+													src="{{ asset('bundles/rajkaranportfolio/concat/images/user.png') }}" alt="Raj Karan" />
 											</div>
 										</div>
-									</div>
-									
-									{#If you want to control the URL the user
-									is redirected to on success (more details below)#}
-									<input type="hidden" name="_target_path" value="/admin/home" />
-									
-								</fieldset>
-							</form>
+
+
+										<div class="row">
+											<div class="col-sm-12 col-md-10  col-md-offset-1 ">
+												<div class="form-group">
+													<div class="input-group">
+														<span class="input-group-addon">
+															<i class="glyphicon glyphicon-user"></i>
+														</span>
+														<input class="form-control" placeholder="Username" id="username" name="_username" type="text" autofocus="autofocus" />
+													</div>
+												</div>
+												<div class="form-group">
+													<div class="input-group">
+														<span class="input-group-addon">
+															<i class="glyphicon glyphicon-lock"></i>
+														</span>
+														<input class="form-control" placeholder="Password" id="password" name="_password" type="password" />
+													</div>
+												</div>
+												<div class="form-group">
+													<input type="submit" class="btn btn-lg btn-primary btn-block" value="Log In" />
+												</div>
+											</div>
+										</div>
+
+										{#If you want to control the URL the user
+										is redirected to on success (more details below)#}
+										<input type="hidden" name="_target_path" value="/admin/home" />
+
+									</fieldset>
+								</form>
+							</div>
 						</div>
 					</div>
+
+
+
+
+
+
+
 				</div>
-				
-				
-				
-				
-				
-				
-				
 			</div>
+
 		</div>
-	
-	</div>
-	
-	
+	</body>
+
 
 {% endblock %}
-
-
-
-
-	
-

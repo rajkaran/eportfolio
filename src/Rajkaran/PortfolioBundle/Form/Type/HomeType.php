@@ -23,7 +23,7 @@ class HomeType extends AbstractType
 
 		$builder->add('imageName', TextType::class);
 
-    $builder->add('tagLine', CKEditorType::class);
+        $builder->add('tagLine', CKEditorType::class);
 
 		$builder->add('save', SubmitType::class, array('label' => 'Submit'));
 

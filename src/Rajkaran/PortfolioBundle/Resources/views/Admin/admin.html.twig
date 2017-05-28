@@ -1,0 +1,62 @@
+{% extends 'RajkaranPortfolioBundle::base.html.twig' %}
+
+{% block title %}Administrator | {{pageName}}{% endblock %}
+
+{% block body %}
+	<body class="be-admin" data-ng-app = "portfolio" data-ng-controller="appCtrl" >
+		<section id="wrapper">
+			<!-- Sidebar -->
+		    <nav id="sidebar-wrapper">
+		        <ul class="sidebar-nav">
+		            <li class="sidebar-brand">
+		                <a class="navbar-brand" href="{{ path('admin_home') }}"> <div>Rajkaran</div> </a>
+		            </li>
+
+					<li><a href="{{ path('admin_home') }}">Home</a></li>
+
+					<li><a href="{{ path('admin_about_me') }}">About Me</a></li>
+
+					<li>
+						<a href="{{ path('admin_career_timeline') }}">Career Timeline</a>
+						<ul>
+							{% for project in projects %}
+								<li><a href="{{path('project', {'project': project.alias})}}">{{ project.projectName }}</a></li>
+							{% endfor %}
+						</ul>
+					</li>
+
+					<li><a href="{{ path('logout') }}">Log Out</a></li>
+		        </ul>
+		    </nav>
+		    <!-- /#sidebar-wrapper -->
+
+			<!-- Page Content -->
+			<div id="page-content-wrapper">
+				<div class="container-fluid">
+					<div class="row">
+		                <div class="col-lg-12">
+		                    <div class="thumbnail thumbnail-{#{detail.cssClass}#}">
+		                        <div class="row ">
+		                            <div class="col-lg-1">
+		                                <a href="#menu-toggle" class="btn-default" id="menu-toggle">
+		                                    <span class="glyphicon glyphicon-align-justify toggle" aria-hidden="true"></span>
+		                                </a>
+		                            </div>
+
+		                            <div class="col-lg-11 text-center project-name"> {{pageName}} </div>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+
+					<div class="row">
+						<div class="col-lg-12">
+							{% block pageContent %}{% endblock %}
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /#page-content-wrapper -->
+		</section>
+	</body>
+{% endblock %}

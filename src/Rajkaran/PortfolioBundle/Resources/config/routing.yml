@@ -5,14 +5,6 @@ login:
 login_check:
     path:   /login_check
 
-account_register:
-    path:     /register
-    defaults: { _controller: RajkaranPortfolioBundle:Account:register }
-
-account_create:
-    path:     /register/create
-    defaults: { _controller: RajkaranPortfolioBundle:Account:create }
-
 logout:
     path:   /logout
 
@@ -39,12 +31,21 @@ admin_about_me:
     path: /admin/aboutMe
     defaults: {_controller: RajkaranPortfolioBundle:BackEnd:aboutMe }
 
+
+
 home:
     path: /
     defaults: {_controller: RajkaranPortfolioBundle:FrontEnd:home }
 
-career_timeline:
-    path: /timeline
-    defaults: {_controller: RajkaranPortfolioBundle:FrontEnd:careerTimeline }
+fe_project:
+    path:      /careerTimeline/{project}
+    defaults:  { _controller: RajkaranPortfolioBundle:FrontEnd:project }
+
+fe_enquiry:
+    path:      /enquiry
+    defaults:  { _controller: RajkaranPortfolioBundle:FrontEnd:enquiryEmail }
     options:
         expose: true
+
+fos_js_routing:
+    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"

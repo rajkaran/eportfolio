@@ -1,0 +1,288 @@
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    background: url(../images/bg2.png);
+}
+
+/* Header */
+.header {
+    display: table;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: url(../images/bg.png) no-repeat center center scroll;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+
+.text-vertical-center{
+    display:table-cell;
+    vertical-align: middle;
+}
+
+.header .logo img{
+    padding:10px 25px;
+    background-color:#ffffff;
+    border:1px solid #cccccc;
+    border-radius:4px;
+}
+
+.header .name{
+    font-size:12rem;
+}
+
+@media (max-width: 992px) {
+    .header .name{
+        font-size:7rem;
+    }
+}
+
+.header .name span:first-child{
+    /*font-family: 'Aref Ruqaa', serif;
+    font-family: 'Montserrat', sans-serif;
+    font-family: 'Raleway', sans-serif;
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-family: 'Indie Flower', cursive;
+    font-family: 'Lobster', cursive;
+    font-family: 'Pacifico', cursive;
+    font-family: 'Quicksand', sans-serif;
+    font-family: 'Dancing Script', cursive;
+    font-family: 'Shadows Into Light', cursive;
+    font-family: 'Poiret One', cursive;
+    font-family: 'Josefin Slab', serif;
+    font-family: 'Source Code Pro', monospace;
+    font-family: 'Kaushan Script', cursive;
+    font-family: 'Satisfy', cursive;
+    font-family: 'Oleo Script', cursive;
+    font-family: 'Lobster Two', cursive;
+    font-family: 'Berkshire Swash', cursive;
+    font-family: 'Merienda', cursive;
+    font-family: 'Merienda One', cursive;
+    font-family: 'Just Another Hand', cursive;
+    font-family: 'Just Me Again Down Here', cursive;
+    font-family: 'Arizonia', cursive;
+    font-family: 'Cookie', cursive;
+    font-family: 'Great Vibes', cursive;*/
+    font-family: 'Leckerli One', cursive;
+}
+
+
+
+.header .tag p{
+    font-size:2rem;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.header .name, .header .tag{
+    color:#ffffff;
+}
+
+/* navigation */
+.navigation .navbar{
+    border-radius: 0px;
+}
+
+/* about me*/
+.about-me {
+    padding-top:20px;
+    padding-bottom: 20px;
+}
+
+/* Project */
+.project .thumbnail .header-icon{
+    width:100%;
+    height:200px;
+    display: table;
+    text-align: center;
+    /*background-color: #337ab7;
+    background-color: #5cb85c;
+    background-color: #5bc0de;
+    background-color: #f0ad4e;
+    background-color: #dff0d8;
+    background-color: #d9edf7;
+    background-color: #fcf8e3;*/
+}
+
+.thumbnail-info{
+    background-color: #5bc0de;
+}
+
+.thumbnail-warning{
+    background-color: #f0ad4e;
+}
+
+.thumbnail-success{
+    background-color: #5cb85c;
+}
+
+.project .thumbnail .header-icon span{
+    display: table-cell;
+    vertical-align: middle;
+    font-size:7rem;
+}
+
+.owl-carousel {
+    position: relative;
+}
+
+
+
+/* Extra small devices (phones, less than 768px) */
+.owl-carousel .owl-item .thumbnail{
+    height:450px;
+}
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .owl-carousel .owl-item .thumbnail{
+        height:500px;
+    }
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .owl-carousel .owl-item .thumbnail{
+        height:500px;
+    }
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .owl-carousel .owl-item .thumbnail{
+        height:400px;
+    }
+}
+
+.owl-prev, .owl-next {
+    position: absolute;
+    top: 50%;
+    margin-top: -10px;
+    background-color: #d9edf7;
+    width:45px;
+    height:90px;
+    display: table;
+    text-align: center;
+}
+
+.owl-prev {
+    left: 0;
+    border-top-right-radius: 45px;
+    border-bottom-right-radius: 45px;
+}
+
+.owl-next {
+    right: 0;
+    border-top-left-radius: 45px;
+    border-bottom-left-radius: 45px;
+}
+
+.owl-prev span {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.owl-next span {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+/* contact me*/
+.contact {
+    padding-bottom:20px;
+}
+
+
+/* footer */
+.fe-main-footer{
+    margin-bottom: 0px;
+    border-radius: 0px;
+}
+
+/* Small devices (phone) */
+@media (max-width: 767px) {
+    .fe-main-footer .social-networking{
+        display:block;
+    }
+    .fe-main-footer .social-networking > li{
+        float:left;
+    }
+}
+
+/* career timeline */
+.fe-timeline #sidebar-wrapper a.navbar-brand,
+.be-admin #sidebar-wrapper a.navbar-brand{
+    font-family:'Leckerli One', cursive;
+    font-size: 1.5em;
+}
+
+.fe-timeline #sidebar-wrapper .icon{
+    font-size:1.1em;
+    padding-right: 10px;
+}
+
+.fe-timeline .toggle,
+.be-admin .toggle{
+    font-size: 38px;
+}
+
+.fe-timeline #page-content-wrapper{
+    padding-bottom: 70px;
+}
+
+.fe-timeline #page-content-wrapper .project-name,
+.be-admin #page-content-wrapper .project-name{
+    font-size:28px;
+}
+
+.fe-timeline .sidebar-nav li.active{
+    background-color: #e7e7e7;
+}
+
+/* Small devices (phone) */
+@media (max-width: 767px) {
+    .fe-timeline .sidebar-nav, .fe-timeline article.row{
+        padding-bottom: 100px;
+    }
+}
+
+@media (min-width: 992px) {
+    .section{
+        margin-bottom:100px;
+    }
+}
+
+.section a{
+    font-family: 'Merienda', cursive;
+}
+
+.section label, .section input, .section textarea{
+    font-size: 2rem;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.section button{
+    font-size: 2rem;
+    font-family: 'Source Code Pro', monospace;
+}
+
+.section-title h2{
+    font-size:5.0rem;
+    /*font-family: 'Raleway', sans-serif;*/
+    font-family: 'Open Sans Condensed', sans-serif;
+    /*font-family: 'Quicksand', sans-serif;
+    font-family: 'Source Code Pro', monospace;
+    font-family: 'Merienda', cursive;
+    font-family: 'Merienda One', cursive;*/
+
+}
+
+.section-body{
+    font-size:2rem;
+    /*font-family: 'Raleway', sans-serif;
+    font-family: 'Open Sans Condensed', sans-serif;*/
+    font-family: 'Quicksand', sans-serif;
+}

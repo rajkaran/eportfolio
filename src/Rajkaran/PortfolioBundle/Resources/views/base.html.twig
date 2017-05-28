@@ -5,27 +5,34 @@
         <title>Rajkaran - {% block title %}{% endblock %}</title>
         <meta name="description" content="This is my electronic portfolio to show case the work I have done since year 2011">
         <meta name="author" content="Rajkaran">
-        
+
         <!-- Mobile Specific Metas -->
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <!-- CSS -->
-        <link rel="stylesheet" href="{{ asset('bundles/rajkaranportfolio/css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('bundles/rajkaranportfolio/concat/css/vendor.css') }}" />
+        <link rel="stylesheet" href="{{ asset('bundles/rajkaranportfolio/concat/css/custom.css') }}" />
+        <link href="https://fonts.googleapis.com/css?family=Arizonia|Berkshire+Swash|Cookie|Great+Vibes|Just+Another+Hand|Just+Me+Again+Down+Here|Leckerli+One|Lobster+Two|Merienda|Merienda+One|Oleo+Script" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Aref+Ruqaa|Dancing+Script|Indie+Flower|Josefin+Slab|Kaushan+Script|Lobster|Montserrat|Open+Sans+Condensed:300|Pacifico|Poiret+One|Quicksand|Raleway|Satisfy|Shadows+Into+Light|Source+Code+Pro" rel="stylesheet">
 		{% block styleSheet %}{% endblock %}
-        
+
         <!-- Favicons
         ================================================== -->
-        <link rel="shortcut icon" href="{{ asset('bundles/rajkaranportfolio/image/favicon.ico') }}">
-        <link rel="apple-touch-icon" href="{{ asset('bundles/rajkaranportfolio/image/apple-touch-icon.png') }}">
-        <link rel="apple-touch-icon" sizes="72x72" href="{{ asset('bundles/rajkaranportfolio/image/apple-touch-icon-72x72.png') }}">
-        <link rel="apple-touch-icon" sizes="114x114" href="{{ asset('bundles/rajkaranportfolio/image/apple-touch-icon-114x114.png') }}">
+        <link rel="shortcut icon" href="{{ asset('bundles/rajkaranportfolio/concat/images/favicon.ico') }}">
+        <link rel="apple-touch-icon" href="{{ asset('bundles/rajkaranportfolio/concat/images/apple-touch-icon.png') }}">
+        <link rel="apple-touch-icon" sizes="72x72" href="{{ asset('bundles/rajkaranportfolio/concat/images/apple-touch-icon-72x72.png') }}">
+        <link rel="apple-touch-icon" sizes="114x114" href="{{ asset('bundles/rajkaranportfolio/concat/images/apple-touch-icon-114x114.png') }}">
     </head>
-    
-    <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
-        {% block body %}{% endblock %}
-		
-		{% block javascript %}{% endblock %}
-		
-		
+
+
+    <!-- body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top" --> {# body openeing tag should reside in body bocks#}
+    {% block body %}{% endblock %}
+	    {% block javascript %}
+            <script src="{{ asset('bundles/rajkaranportfolio/concat/js/vendor.js') }}"></script>
+            <script src="{{ asset('bundles/rajkaranportfolio/concat/js/custom.js') }}"></script>
+            <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+        {% endblock %}
     </body>
 </html>
